@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Calculators · Cassowary Budget App</title>
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/calc.css') }}">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon"> <!-- Add the CSS file for tabs -->
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'calc' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <div class="tab-container">
+    <ul class="tabs">
+      <li class="active"><a href="{{ url_for('views.calc') }}">Savings Calculator</a></li>
+      <li><a href="{{ url_for('views.repayment_calculator') }}">Repayment Calculator</a></li>
+      <li><a href="{{ url_for('views.stamp_duty_calculator') }}">Stamp Duty Calculator</a></li>
+    </ul>
+    <div class="tab-content">
+      <form method="POST" action="{{ request.path }}">
+        <h1>How to Save Calculator</h1>
+        <div class="input">
+          <div class="form-group">
+            <label for="amount">Amount:</label><br>
+            <input type="number" name="amount" id="amount">
+          </div>
+          <div class="form-group">
+            <label for="duration">Duration:</label><br>
+            <input type="number" name="duration" id="duration">
+            <select name="duration-unit">
+              <option value="year">Years</option>
+              <option value="month">Months</option>
+              <option value="week">Weeks</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="starting-balance">Starting Balance:</label><br>
+            <input type="number" name="starting-balance" id="starting-balance">
+          </div>
+    
+          <div class="form-group">
+            <label for="interest-rate">Interest Rate: (% per annum)</label><br>
+            <input type="number" name="interest-rate" id="interest-rate" step="0.01">
+          </div>
+          <div class="button-container">
+            <input type="submit" value="Calculate" onclick="showResult()">
+            <input type="reset">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div id="result" class="hidden">
+      {% if monthly_savings %}
+        <h1>Calculation Result</h1>
+        <h2>Result:</h2>
+        <h3>In order to save ${{ '%.2f'|format(amount) }} over {{ duration }} {{ duration_unit }} with a starting balance of ${{ starting_balance }} and an interest rate of {{ interest_rate }}%, you need to save:</h3>
+        <table class="budget-table">
+          <tr>
+            <th>Amount</th>
+            <th>Frequency</th>
+          </tr>
+          <tr>
+            <td>${{ '%.2f'|format(monthly_savings) }}</td>
+            <td>per month</td>
+          </tr>
+          <tr>
+            <td>${{ '%.2f'|format(monthly_savings / 2) }}</td>
+            <td>per fortnight</td>
+          </tr>
+          <tr>
+            <td>${{ '%.2f'|format(monthly_savings / 4) }}</td>
+            <td>per week</td>
+          </tr>
+        </table>
+      {% endif %}
+
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+          function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Duration');
+            data.addColumn('number', 'Amount Saved');
+            data.addColumn('number', 'Interest Earned');
+            data.addColumn('number', 'Starting Balance');
+            
+            data.addRows({{ chart_data | safe }});
+          
+            var options = {
+              title: 'Savings Summary',
+              titleTextStyle: {
+                fontSize: 20,
+                bold: true,
+                textAlign: 'center'
+              },
+              chartArea: {width: '70%'},
+              hAxis: {
+                title: '{{duration_unit.capitalize()}}',
+                minValue: 1
+              },
+              vAxis: {
+                title: 'Amount',
+                minValue: 0
+              },
+              isStacked: true,
+              colors: ['#3366CC', '#DC3912', '#FF9900']
+            };
+          
+            var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+      </script>
+
+      
+      <div id="chart_div" style="width: 800px; height: 600px; margin: 0 auto;"></div>
+    </div>
+  </div>
+  {% include 'footer.html' %}
+</body>
+</html>

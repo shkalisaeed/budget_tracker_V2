@@ -1,0 +1,1217 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Creator · Cassowary Budget App</title>
+        <link rel="stylesheet" type="text/css" href="/Static/css/stylesBCreat.css">
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+              rel="stylesheet">
+        <link rel="icon"
+              href="{{ url_for('static', filename='images/favicon.ico') }}"
+              type="image/x-icon">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </head>
+    <body style="font-family: 'Raleway', sans-serif;">
+        {% set current_page = "budget_creator" %}  <!-- Set the current page variable -->
+        {% include 'navbar.html' %}
+        <head>
+            <title>Categories</title>
+            <script>
+                function toggleSubcategory(subcatId) {
+                    const subcat = document.getElementById(subcatId + "-subcat");
+                    subcat.style.display = subcat.style.display === "none" ? "table-row" : "none";
+                }
+                
+                function updateCategoryTotal(categoryId, frequency) {
+                    const viewSelect = document.getElementById("view-select");
+                    const view = viewSelect.value;
+                    const subcatTable = document.getElementById(`${categoryId}-subcat`);
+                    const subcatElems = subcatTable.querySelectorAll('input[type="number"]');
+                    let total = 0;
+                
+                    subcatElems.forEach(elem => {
+                        const subcatRow = elem.parentNode.parentNode;
+                        const subcatFrequency = subcatRow.querySelector('select').value;
+                        const subcatValue = parseFloat(elem.value) || 0;
+                
+                        if (subcatFrequency === view) {
+                            total += subcatValue;
+                        } else if (subcatFrequency === "weekly" && view === "fortnightly") {
+                            total += subcatValue * 2;
+                        } else if (subcatFrequency === "weekly" && view === "monthly") {
+                            total += subcatValue * 4;
+                        } else if (subcatFrequency === "fortnightly" && view === "weekly") {
+                            total += subcatValue / 2;
+                        } else if (subcatFrequency === "fortnightly" && view === "monthly") {
+                            total += subcatValue * 2;
+                        } else if (subcatFrequency === "monthly" && view === "weekly") {
+                            total += subcatValue / 4;
+                        } else if (subcatFrequency === "monthly" && view === "fortnightly") {
+                            total += subcatValue / 2;
+                        }
+                    });
+                
+                    const totalElem = document.getElementById(categoryId + "-total");
+                    totalElem.textContent = total.toFixed(2);
+                    updateIncomeExpensesTotal();
+                }
+                
+                
+                function formatNumberWithDollarSign(number) {
+                    const formatter = new Intl.NumberFormat('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                      minimumFractionDigits: 2,
+                    });
+                    return formatter.format(number);
+                }  
+                
+                function updateIncomeExpensesTotal() {
+                    const incomeTotal = parseFloat(document.getElementById("income-total").textContent);
+                    const eatingOutTotal = parseFloat(document.getElementById("EatingOut-total").textContent);
+                    const entertainmentTotal = parseFloat(document.getElementById("Entertainment-total").textContent);
+                    const groceriesTotal = parseFloat(document.getElementById("Groceries-total").textContent);
+                    const TransportationTotal = parseFloat(document.getElementById("Transportation-total").textContent);
+                    const HealthTotal = parseFloat(document.getElementById("Health-total").textContent);
+                    const ShoppingTotal = parseFloat(document.getElementById("Shopping-total").textContent);
+                    const HousingTotal = parseFloat(document.getElementById("Housing-total").textContent);
+                    const ServicesTotal = parseFloat(document.getElementById("Services-total").textContent);
+                    const EducationTotal = parseFloat(document.getElementById("Education-total").textContent);
+                    const InsuranceTotal = parseFloat(document.getElementById("Insurance-total").textContent);
+                    const DonationTotal = parseFloat(document.getElementById("Donation-total").textContent);
+                    const MiscellaneousTotal = parseFloat(document.getElementById("Miscellaneous-total").textContent);
+                    const expensesTotal = eatingOutTotal + entertainmentTotal + groceriesTotal + DonationTotal + TransportationTotal + HealthTotal + HousingTotal + ShoppingTotal + ServicesTotal + EducationTotal + InsuranceTotal + MiscellaneousTotal ;
+                    const incomeExpensesTotal = incomeTotal - expensesTotal;
+                    const formattedIncomeExpensesTotal = formatNumberWithDollarSign(incomeExpensesTotal);
+                    document.getElementById("income-expenses-total").textContent = formattedIncomeExpensesTotal;
+                }
+
+                function sendData() {
+                    $.ajax({
+                        url: '/get_budget',
+                        type: 'POST',
+                        data: { 'income': document.getElementById("income-total").textContent,
+                                'eating_out':  document.getElementById("EatingOut-total").textContent,
+                                'entertainment': document.getElementById("Entertainment-total").textContent,
+                                'groceries': document.getElementById("Groceries-total").textContent,
+                                'transportation': document.getElementById("Transportation-total").textContent,
+                                'health': document.getElementById("Health-total").textContent,
+                                'shopping': document.getElementById("Shopping-total").textContent,
+                                'housing': document.getElementById("Housing-total").textContent,
+                                'services': document.getElementById("Services-total").textContent,
+                                'insurance': document.getElementById("Insurance-total").textContent,
+                                'education': document.getElementById("Education-total").textContent,
+                                'Donation': document.getElementById("Donation-total").textContent,
+                                'misc': document.getElementById("Miscellaneous-total").textContent},
+                        success: function(response) {
+                            document.getElementById('output').innerHTML = response;
+                        },
+                        error: function(error) {
+                            console.log(error);
+                        }
+                    });
+                }
+      
+            </script>
+        </head>
+        <body>
+            <header>
+                <h1>
+                    <a href="{{ url_for('views.home') }}"
+                       style="text-decoration:none;
+                              color: white">Monthly Budget Planner</a>
+                </h1>
+            </header>
+            {% if shared_budgets %}
+                <br>
+                <div class="alert">
+                    <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                    <a href="{{ url_for('views.budget_sharing') }}">You have budgets shared by other users. Click here to view them.</a>
+                </div>
+            {% endif %}
+            <table style="margin: 50px auto; width: 80%;">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Total</th>
+                        <th>
+                            View:
+                            <select id="view-select">
+                                <option value="monthly">Monthly</option>
+                                <option value="fortnightly">Fortnightly</option>
+                                <option value="weekly">Weekly</option>
+                            </select>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="dropdown" onclick="toggleSubcategory('income')">
+                        <td>Income</td>
+                        <td class="total" id="income-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="income-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Your take-home pay</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('income')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('income', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Bonuses & overtime</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('income')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('income', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Income from savings & investments</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('income')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('income', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Centrelink benefits</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('income')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('income', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('income')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('income', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Donation')">
+                        <td>Donation</td>
+                        <td id="Donation-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Donation-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Direct Debit Donations</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Donation')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Donation', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>One Off Donations</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Donation')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Donation', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </td>
+                        </table>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('EatingOut')">
+                        <td>Eating Out</td>
+                        <td id="EatingOut-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="EatingOut-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Take Away & Snacks</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('EatingOut')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('EatingOut', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Coffee</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('EatingOut')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('EatingOut', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Restaurants</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('EatingOut')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('EatingOut', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Lunches (Work)</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('EatingOut')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('EatingOut', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('EatingOut')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('EatingOut', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Education')">
+                        <td>Education</td>
+                        <td id="Education-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Education-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Tuition & Fees</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Education')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Education', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Books & Supplies</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Education')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Education', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Professional Development Courses</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Education')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Education', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Education')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Education', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Entertainment')">
+                        <td>Entertainment</td>
+                        <td id="Entertainment-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Entertainment-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Movies and Theaters</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Entertainment')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Entertainment', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Music and Concerts</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Entertainment')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Entertainment', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Sporting Events</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Entertainment')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Entertainment', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Theme Parks and Attractions</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Entertainment')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Entertainment', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Entertainment')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Entertainment', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Groceries')">
+                        <td>Groceries</td>
+                        <td id="Groceries-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Groceries-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Produce and Fruits</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Groceries')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Groceries', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Meat and Poultry</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Groceries')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Groceries', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Dairy and Eggs</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Groceries')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Groceries', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Snacks and Desserts</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Groceries')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Groceries', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Groceries')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Groceries', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Health')">
+                        <td>Health</td>
+                        <td id="Health-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Health-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Prescription Medications</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Health')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Health', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Vitamins and Supplements</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Health')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Health', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Gym memberships</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Health')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Health', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Health')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Health', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Housing')">
+                        <td>Housing & Utilities</td>
+                        <td id="Housing-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Housing-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Rent or mortgage payments</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Housing')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Housing', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Council Rates</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Housing')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Housing', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Home insurance</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Housing')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Housing', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Electricity and gas bills</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Housing')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Housing', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Water and sewage bills</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Housing')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Housing', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Housing')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Housing', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Insurance')">
+                        <td>Insurance</td>
+                        <td id="Insurance-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Insurance-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Home Insurance</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Insurance')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Insurance', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Car Insurance</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Insurance')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Insurance', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Health insurance</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Insurance')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Insurance', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other Insurance</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Insurance')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Insurance', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Services')">
+                        <td>Services</td>
+                        <td id="Services-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Services-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Legal & Accounting Services</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Services')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Services', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Cleaning and Maintenance services</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Services')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Services', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Hair and beauty services</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Services')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Services', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Childcare</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Services')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Services', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Services')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Services', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Shopping')">
+                        <td>Shopping</td>
+                        <td id="Shopping-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Shopping-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Clothing and accessories</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Shopping')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Shopping', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Electronics and gadgets</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Shopping')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Shopping', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Home goods and decor</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Shopping')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Shopping', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Books and media</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Shopping')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Shopping', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Shopping')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Shopping', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Transportation')">
+                        <td>Travel & Transportation</td>
+                        <td id="Transportation-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Transportation-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Car payments</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Transportation')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Transportation', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Petrol</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Transportation')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Transportation', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Car Insurance</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Transportation')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Transportation', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Public transportation</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Transportation')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Transportation', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Other</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Transportation')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Transportation', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr class="dropdown" onclick="toggleSubcategory('Miscellaneous')">
+                        <td>Miscellaneous	& Other Expenses</td>
+                        <td id="Miscellaneous-total">0.00</td>
+                        <td style="text-align: right;">&#x25BC;</td>
+                    </tr>
+                    <tr class="subcategory" id="Miscellaneous-subcat" style="display: none;">
+                        <td colspan="3">
+                            <table>
+                                <tr>
+                                    <td>Alcohol & Ciggarettes</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Miscellaneous')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Miscellaneous', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Any Other Expense</td>
+                                    <td>
+                                        <input type="number"
+                                               min="0"
+                                               step="0.01"
+                                               onchange="updateCategoryTotal('Miscellaneous')" />
+                                    </td>
+                                    <td>
+                                        <select onchange="updateCategoryTotal('Miscellaneous', this.value)">
+                                            <option value="monthly">Monthly</option>
+                                            <option value="fortnightly">Fortnightly</option>
+                                            <option value="weekly">Weekly</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <!-- Add more categories and subcategories as needed -->
+                    <tr id="summary-row">
+                        <td>Summary</td>
+                        <td id="income-expenses-total">0.00</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="container">
+                <!-- button that sends data to flask backend -->
+                <button onclick="sendData()" class = "button">Send Data</button>
+                <div id="output"></div>
+                {% include 'footer.html' %}  
+            </div>
+        </body>
+    </html>

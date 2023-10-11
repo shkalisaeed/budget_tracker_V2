@@ -1,0 +1,147 @@
+{% import "bootstrap/wtf.html" as wtf %}
+<head>
+  <meta charset="UTF-8">
+<<<<<<< HEAD
+  <title>Cassowary Budget App</title>
+=======
+  <title>Home · Cassowary Budget App</title>
+>>>>>>> ea346d13acf957643292dd40d69d34200d8cc767
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesLanding.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/navbar.css') }}">
+</head>
+
+{% set current_page = 'landing' %}  <!-- Set the current page variable -->
+<div class="navbar">
+  <nav>
+    <a href="{{ url_for('views.home') }}" style="padding: 0 !important;">
+      <img class="logo"
+           src="{{ url_for('static', filename='images/logo.png') }}">
+    </a>
+    <h4>
+      <a href="{{ url_for('views.home') }}"
+         {% if current_page == 'home' %}class="active"{% endif %}
+         style="color:white;
+                text-decoration:none;
+                white-space: nowrap">Cassowary Budget Tracker</a>
+    </h4>
+    <ul>
+      <li>
+        <a href="{{ url_for('auth.login') }}">Login</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+
+<body style="font-family: 'Raleway', sans-serif;">
+
+  
+  <div class="center-content">
+    <div class="image-content">
+      <div class="landing-box">
+        <img src="{{ url_for('static', filename='images/homepage.jpg') }}"
+          alt="Landing Page image"
+          class="landing-img">
+        <div class="content-box">
+          <div class="img-text">
+            <h3>
+              <strong>
+                Master Your Future with Effortless Budgeting
+              </strong>
+            </h3>
+            <span class="txt">Register now to plan your future and become financially secure. Gain access to intuitive budgeting tools, see your expenses and track your investments all in one place.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="login">
+      <table class="loginsignup">
+        <tr>
+          <td>
+            <a class="log-button" href="{{ url_for('auth.signup') }}">Register</a>
+          </td>
+          <td>
+            <a class="log-button" href="{{ url_for('auth.login') }}">Login</a>
+          </td>
+
+          <td class="to">
+            To start your journey to financial peace of mind
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="content">
+      <ul class="contentbox">
+        <li>
+          <h2>
+            What is Budgeting?
+          </h2>
+          <span class="txt"> Budgeting is the process of creating a plan for managing and allocating financial resources. It involves tracking income, expenses, and savings to ensure that money is allocated effectively and in line with personal or organizational goals.</span>
+        </li>
+        <li>
+          <img class="image" src="{{ url_for('static', filename='images/budgeting2.jpg') }}">
+        </li>
+      </ul>
+      <table class="line">
+        <tr>
+          <td>
+            
+          </td>
+        </tr>
+      </table>
+      <div class="sizer">
+      <table class="functionalities">
+        <tr>
+          <td> 
+            <div class="table-item">
+              <img src="{{ url_for('static', filename='images/budgeting.png') }}"
+              class="table-icon">
+              <div class="table-content">
+                <h2>Create a budget</h2>
+                <span class="desc"><strong>Create</strong> and <strong>manage</strong> your personalized budget, take control of your finances and <strong>achieve your financial goals</strong>.</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="table-item">
+              <img src="{{ url_for('static', filename='images/payment.png') }}"
+              class="table-icon">
+              <div class="table-content">
+                <h2>View bills and expenses</h2>
+                <span class="desc"><strong>Stay organized</strong> and <strong>avoid late fees</strong>, by setting bill alerts and achieve financial peace of mind.</span>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="table-item">
+              <img src="{{ url_for('static', filename='images/calculator.png') }}"
+              class="table-icon">
+              <div class="table-content">
+                <h2>Calculate savings and interest</h2>
+                <span class="desc"><strong>Calculate</strong> interest repayments, stamp duty costs, and plan your savings goals with our comprehensive calculator tool.</span>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="table-item">
+              <img src="{{ url_for('static', filename='images/investment.png') }}"
+              class="table-icon">
+              <div class="table-content">
+                <h2>Track investments</h2>
+                <span class="desc"><strong>Track</strong> and <strong>analyse</strong> your investments in real-time, providing you with the insights and data you need to <strong>make informed decisions.</strong></span>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    </div>
+  </div>
+{% include 'footer.html' %}  
+</body>

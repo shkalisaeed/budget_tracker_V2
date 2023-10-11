@@ -1,0 +1,386 @@
+<html>
+  {% import "bootstrap/wtf.html" as wtf %}
+  {% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesBSum.css') }}">
+    <meta charset="UTF-8">
+    <title>Summary · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+    {% set current_page = "summary" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+  {% endblock %}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    $(document).ready(function() {
+        $('#Cats').change(function() {
+        var selectedCategory = $(this).val();
+        $.ajax({
+            url: '/summary',
+            type: 'POST',
+            data: { category: selectedCategory },
+            success: function(response) {
+            console.log("Selected Category:", selectedCategory);
+            drawChartBar(response); // Pass the response data to the drawChart function
+            }
+        });
+        });
+    });
+
+    google.charts.load("current", { packages: ["corechart"] });
+    google.charts.setOnLoadCallback(drawChartBar);
+
+    function drawChartBar() {
+        var bar_array = {{ bar_array | safe }};
+        console.log(bar_array);
+        var header = ["Type", "Amount", { role: "style" }];
+        bar_array.unshift(header);
+        var data = google.visualization.arrayToDataTable(bar_array);
+
+        var view = new google.visualization.DataView(data);
+        view.setColumns([
+        0,
+        1,
+        { calc: "stringify", sourceColumn: 1, type: "string", role: "annotation" },
+        2
+        ]);
+
+        var options = {
+        bar: { groupWidth: "95%" },
+        backgroundColor: 'transparent',
+        legend: { position: "none" }
+        };
+
+        var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
+        chart.draw(view, options);
+    }
+  </script>
+  <script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawChartBreakdown);
+    
+    function drawChart() {
+      // Calculate the total income using JavaScript
+      let totalIncome = 0;
+      const amountElements = document.querySelectorAll(".income td:first-child");
+      for (const amountElement of amountElements) {
+        totalIncome += parseFloat(amountElement.textContent);
+      }
+
+      // Assign the total income value to the total_income variable
+      var total_income = totalIncome;
+      var total_expenses = {{ total_expenses | safe }};
+      var total = total_expenses + total_income
+
+      var data = google.visualization.arrayToDataTable([
+        ['Spending/Budget', '$'],
+        ['Total Expenses ($)', total_expenses],
+        ['Total Income ($)', total_income],
+      ]);
+
+      var options = {
+        pieHole: 0.8,
+        backgroundColor: 'transparent',
+        colors: ['#D9534F', '#5CB85C'],
+        legend: 'bottom',
+        pieSliceText: 'none'
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('incomechart'));
+      chart.draw(data, options);
+      var total_expenses2 = total_expenses.toFixed(2);
+      var total_income2 = total_income.toFixed(2);
+      var category1Percentage = '$' + total_expenses2 + '\n---- VS ----\n$' + total_income2; // Format the percentage value as a string
+
+    var svgContainer = document.getElementById('incomechart'); // Get the container div for the chart
+    var svgElement = svgContainer.getElementsByTagName('svg')[0]; // Get the SVG element of the chart
+    var pieHoleRadius = options.pieHole * Math.min(svgElement.clientWidth, svgElement.clientHeight) / 2; // Calculate the radius of the pie hole
+
+    var textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Create a new SVG text element
+    textElement.setAttribute('x', svgElement.clientWidth / 2); // Set the x-coordinate for the text element
+    textElement.setAttribute('y', svgElement.clientHeight / 2.5 + 5); // Set the y-coordinate for the text element
+    textElement.setAttribute('text-anchor', 'middle'); // Set the text-anchor attribute to middle
+    textElement.setAttribute('font-size', '20'); // Set the font size for the text element
+
+    var tspans = category1Percentage.split('\n').map(function(line, index) {
+        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        tspan.setAttribute('x', svgElement.clientWidth / 2);
+        tspan.setAttribute('dy', '1.2em');
+        tspan.textContent = line;
+        return tspan;
+    });
+
+    tspans.forEach(function(tspan) {
+        textElement.appendChild(tspan);
+    });
+
+    svgElement.appendChild(textElement); // Append the text element to the SVG container
+    }
+
+    function sortTable(n) {
+        var tables = document.getElementsByTagName("table");
+        var switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        dir = "asc";
+      
+        for (var t = 0; t < tables.length; t++) {
+          var table = tables[t];
+          switching = true;
+      
+          while (switching) {
+            switching = false;
+            var rows = table.rows;
+      
+            for (i = 1; i < (rows.length - 2); i++) {
+              shouldSwitch = false;
+              x = rows[i].getElementsByTagName("td")[n];
+              y = rows[i + 1].getElementsByTagName("td")[n];
+              var xValue = getCellValue(x);
+              var yValue = getCellValue(y);
+      
+              if (dir === "asc") {
+                if (xValue > yValue) {
+                  shouldSwitch = true;
+                  break;
+                }
+              } else if (dir === "desc") {
+                if (xValue < yValue) {
+                  shouldSwitch = true;
+                  break;
+                }
+              }
+            }
+      
+            if (shouldSwitch) {
+              rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+              switching = true;
+              switchcount++;
+            } else {
+              if (switchcount === 0 && dir === "asc") {
+                dir = "desc";
+                switching = true;
+              }
+            }
+          }
+        }
+        updateSortIndicator(n, dir); // Update sort indicator after sorting
+      }
+      function updateSortIndicator(columnIndex, sortOrder) {
+        var arrowElements = document.getElementsByClassName("sort-arrow");
+      
+        // Remove active class and reset arrow direction for all arrows
+        for (var i = 0; i < arrowElements.length; i++) {
+          arrowElements[i].classList.remove("active");
+          arrowElements[i].innerHTML = "";
+        }
+      
+        var arrowElement = document.getElementById("arrow" + columnIndex);
+      
+        // Add active class to the arrow of the sorted column
+        arrowElement.classList.add("active");
+      
+        // Update arrow direction based on the sort order
+        arrowElement.innerHTML = sortOrder === "asc" ? "&#8593;" : "&#8595;";
+      }
+      
+      
+      function getCellValue(cell) {
+        var cellValue = cell.textContent || cell.innerText;
+        return parseNumericValue(cellValue);
+      }
+      
+      function parseNumericValue(value) {
+        return parseFloat(value.replace(/[^0-9.-]+/g, ""));
+      }
+          
+  </script>
+  <body>
+    <div class="header">
+      <h1 class="title">Monthly Budget and Expenditure</h1>
+      <title>Categories</title>
+      <title>Responsive Bar Chart</title>
+      <form method="get" class="budget-form">
+        <label for="months" class="budget-label">Select a month:</label>
+        <select id="months" name="months" class="budget-dropdown">
+          {% for month in months %}
+            <option value="{{ month }}"
+                    {% if selected_month == month %}selected{% endif %}>{{ month }}</option>
+          {% endfor %}
+        </select>
+        <input type="submit" value="Submit" class="budget-submit">
+      </form>
+    </div>
+    <div class="row">
+      <div class="column">
+        <h1>Monthly Expenditure</h1>
+        <div style="display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    align-items: center">
+          <div style="flex: 1">
+            <img src="data:image/png;base64,{{ pie_plot_breakdown }}" />
+          </div>
+          <div style="flex: 1">
+            <img src="data:image/png;base64,{{ pie_plot_remaining }}" />
+          </div>
+        </div>
+        <table id="myTable">
+          <thead>
+            <tr>
+              <th onclick="sortTable(0)">
+                Category
+                <span id="arrow0" class="sort-arrow"></span>
+              </th>
+              <th onclick="sortTable(1)">
+                Spent
+                <span id="arrow1" class="sort-arrow"></span>
+              </th>
+              <th onclick="sortTable(2)">
+                Budget
+                <span id="arrow2" class="sort-arrow"></span>
+              </th>
+              <th onclick="sortTable(3)">
+                Remaining
+                <span id="arrow3" class="sort-arrow"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in spendings %}
+              <tr>
+                <td>{{ row.category }}</td>
+                <td>{{ row.spent|format_currency }}</td>
+                <td>{{ row.budget|format_currency }}</td>
+                <td style="color: {% if row.budget - row.spent > 0 %}green{% else %}red{% endif %}">
+                  {{ (row.budget - row.spent)|format_currency }}
+                </td>
+              </tr>
+            {% endfor %}
+            <tr style="font-weight: bold;">
+              <td>Total</td>
+              <td>{{ spendings|sum(attribute='spent')|format_currency }}</td>
+              <td>{{ spendings|sum(attribute='budget')|format_currency }}</td>
+              <td style="color: {% if spendings|sum(attribute='budget') - spendings|sum(attribute='spent') > 0 %}green{% else %}red{% endif %}">
+                {{ (spendings|sum(attribute='budget') - spendings|sum(attribute='spent'))|format_currency }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="column">
+        <h1>Income</h1>
+        <div style="display: flex;
+                    justify-content: center;
+                    align-items: flex-start">
+          <body>
+            <div id="incomechart" style="width: 500px; height: 500px;"></div>
+          </body>
+        </div>
+        <table class = "income">
+          <tr>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Account Type</th>
+          </tr>
+          {% for income in user_income %}
+            {% if income_month(income.income_date, selected_month) %}
+              <tr>
+                <!-- KAI HERE LAD -->
+                <td>{{ income.income_amount }}</td>
+                <td>{{ income.income_description }}</td>
+                <td>{{ income.income_date }}</td>
+                <td>{{ income.account_type }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+    <div class="row">
+      <div class="column">
+        <h1>Monthly Total Spending</h1>
+        <div style="flex: 1;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center">
+          <img src="data:image/png;base64,{{ bar_plot_months }}" />
+        </div>
+      </div>
+      <div class="column">
+        <h1>Monthly Total Category Spending</h1>
+        <form method="get" class="budget-form">
+          <label for="Cats" class="budget-label">Select a Category:</label>
+          <select id="Cats" name="Cats" class="budget-dropdown">
+            <option>Select a Category</option>
+            <option value="Donation">Donation</option>
+            <option value="Eating Out">Eating Out</option>
+            <option value="Education">Education</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Health">Health</option>
+            <option value="Housing">Housing & Utilities</option>
+            <option value="Insurance">Insurance</option>
+            <option value="Services">Services</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Travel and Transport">Travel & Transportation</option>
+            <option value="Miscellaneous">Miscellaneous & Other Expenses</option>
+          </select>
+          <input type="submit" value="Submit" class="budget-submit">
+        </form>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript">
+          google.charts.load("current", { packages: ["corechart"] });
+      
+          google.charts.setOnLoadCallback(drawChartBar);
+          function drawChartBar() {
+              var bar_array = {{ bar_array | safe }}
+              
+              var header = ["Category", "Amount", { role: "style" }];
+              bar_array.unshift(header);
+              var data = google.visualization.arrayToDataTable(bar_array);
+              var selected_category = "{{ selected_category | safe }}"
+              var view = new google.visualization.DataView(data);
+              view.setColumns([
+                  0,
+                  1,
+                  {
+                      calc: "stringify",
+                      sourceColumn: 1,
+                      type: "string",
+                      role: "annotation",
+                  },
+                  2,
+              ]);
+      
+              var options = {
+                  title: selected_category,
+                  bar: {
+                      groupWidth: "85%", // Adjust the groupWidth value as needed (e.g., "80%")
+                  },
+                  backgroundColor: "transparent",
+                  legend: { position: "none" },
+                  chartArea: { width: "80%", height: "80%" }, // Adjust the chartArea dimensions as needed
+              };
+      
+              var chart = new google.visualization.BarChart(
+                  document.getElementById("barchart_values")
+              );
+              chart.draw(view, options);
+          }
+        </script>
+        <body>
+          <div id="barchart_values"
+               style="width: 1000px;
+                      height: 500px;
+                      margin: 0 auto"></div>
+        </body>
+      </div>
+    </div>
+    {% set current_page = "summary" %}
+    {% include 'footer.html' %}
+  </html>

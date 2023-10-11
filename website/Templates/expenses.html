@@ -1,0 +1,316 @@
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Expenses · Cassowary Budget App</title>
+        <link rel="stylesheet" type="text/css" href="/Static/css/stylesEXP.css">
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+                rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+                integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+                integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+                crossorigin="anonymous"></script>
+        <link rel="icon"
+                href="{{ url_for('static', filename='images/favicon.ico') }}"
+                type="image/x-icon">
+    </head>
+    <body style="font-family: 'Raleway', sans-serif;">
+        {% set current_page = "expenses" %}  <!-- Set the current page variable -->
+        {% include 'navbar.html' %}
+        <!-- Add your content here -->
+        <header>
+            <h1>Transaction History</h1>
+        </header>
+        <main>
+        {% if expense_count == 0 %}
+                                    <strong style="font-size: 90px; margin: 12rem auto; margin-bottom: 0; text-align: center;">No expenses found. Add some <a href="{{ url_for('uploads.upload_expenses') }}">here.</a></strong>
+                                    <img class="notfound" src="{{ url_for('static', filename='images/notfound.png') }}">
+
+        {% else %}
+            <section id="filters">
+                <h2>Filters</h2>
+                <label for="price-min-filter">Price Min:</label>
+                <input type="range"
+                        id="price-min-filter"
+                        name="price-min-filter"
+                        min="0"
+                        max="{{ largest }}"
+                        value="{{ price_min }}">
+                <span id="price-min-output"></span>
+                <label for="price-max-filter">Price Max:</label>
+                <input type="range"
+                        id="price-max-filter"
+                        name="price-max-filter"
+                        min="0"
+                        max="{{ largest * 1.1 }}"
+                        value="{{ price_max }}">
+                <span id="price-max-output"></span>
+                <label for="category-filter">Category:</label>
+                <select id="category-filter" name="category-filter">
+                    <option value="">Select Category</option>
+                    <option value="Eating Out">Eating Out</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Groceries">Groceries</option>
+                    <option value="Travel and Transport">Travel and Transport</option>
+                    <option value="Health">Health</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Housing">Housing and Utilities</option>
+                    <option value="Services">Services</option>
+                    <option value="Education">Education</option>
+                    <option value="Miscellaneous">Miscellaneous</option>
+                    <option value="Insurance">Education</option>
+                    <option value="Donations">Miscellaneous</option>
+                </select>
+                <select id="account-filter" name="account-filter">
+                    <option value="">Select Account Type</option>
+                    <option value="Debit">Debit</option>
+                    <option value="Credit">Credit</option>
+                </select>
+                <button id="apply-filters">Apply Filters</button>
+                <button id="clear-filters">Clear Filters</button>
+            </section>
+            <!-- Display the transaction table here -->
+            <table class="transactions_table" border="1" cellspacing="0">
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Category</th>
+                    <th>Account</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                </tr>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.expense_date }}</td>
+                        <td>{{ transaction.description }}</td>
+                        <td>{{ transaction.expense_amount|format_currency }}</td>
+                        <td>{{ transaction.expense_category }}</td>
+                        <td>{{ transaction.account_type }}</td>
+                        <td>
+                            <!-- Modal box for editting a transaction -->
+                            <button type="button"
+                                    class="btn btn-success"
+                                    data-toggle="modal"
+                                    data-target="#update_expense_{{ transaction['expense_id'] }}">Update</button>
+                            <div class="modal fade"
+                                    id="update_expense_{{ transaction['expense_id'] }}"
+                                    tabindex="-1"
+                                    role="dialog"
+                                    aria-labelledby="basicModal"
+                                    aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" id="myModalLabel">Update a transaction</h4>
+                                        </div>
+                                        <form action="{{ url_for('views.update_expense', expense_id=transaction['expense_id']) }}"
+                                                method="post">
+                                            <div class="modal-body">
+                                                <div class="form-group row">
+                                                    <label for="Date" class="col-xs-2 control-label">Date</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="date"
+                                                                class="form-control"
+                                                                name="Date"
+                                                                value="{{ transaction['expense_date'] }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <br>
+                                                    <label for="Description" class="col-xs-2 control-label">Description</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text"
+                                                                class="form-control"
+                                                                name="Description"
+                                                                value="{{ transaction['description'] }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <br>
+                                                    <label for="Amount" class="col-xs-2 control-label">Amount</label>
+                                                    <div class="col-xs-10">
+                                                        <!-- input type="number" has forced step control and I can't get around it so I've made it text.
+                                                            Backend code will validate whether it's a number.-->
+                                                        <input type="text"
+                                                                class="form-control"
+                                                                name="Amount"
+                                                                value="{{ transaction['expense_amount'] }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <br>
+                                                    <label for="Category" class="col-xs-2 control-label">Category</label>
+                                                    <div class="col-xs-10">
+                                                        <select type="text"
+                                                                class="form-control"
+                                                                name="Category"
+                                                                value="{{ transaction['expense_category'] }}">
+                                                            <option value="none" selected disabled hidden>{{ transaction['expense_category'] }}</option>
+                                                            <option value="Eating Out">Eating Out</option>
+                                                            <option value="Entertainment">Entertainment</option>
+                                                            <option value="Groceries">Groceries</option>
+                                                            <option value="Travel and Transport">Travel and Transport</option>
+                                                            <option value="Health">Health</option>
+                                                            <option value="Shopping">Shopping</option>
+                                                            <option value="Housing">Housing and Utilities</option>
+                                                            <option value="Services">Services</option>
+                                                            <option value="Education">Education</option>
+                                                            <option value="Insurance">Insurance</option>
+                                                            <option value="Donations">Donations</option>
+                                                            <option value="Miscellaneous">Miscellaneous</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <br>
+                                                    <label for="Account" class="col-xs-2 control-label">Account</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text"
+                                                                class="form-control"
+                                                                name="Account"
+                                                                value="{{ transaction['account_type'] }}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <br>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-success">Submit</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    data-toggle="modal"
+                                    data-target="#delete_expense_{{ transaction['expense_id'] }}">Delete</button>
+                            <div class="modal fade"
+                                    id="delete_expense_{{ transaction['expense_id'] }}"
+                                    role="dialog"
+                                    aria-labelledby="basicModal"
+                                    aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" id="myModalLabel">Delete an expense</h4>
+                                        </div>
+                                        <form action="{{ url_for('views.delete_expense', expense_id=transaction['expense_id']) }}"
+                                                method="post"
+                                                style="display: inline">
+                                            <div class="modal-body">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-12 col-form-label">
+                                                        Do you want to delete the expense <span style='font-weight:bold;color:red'>{{ transaction['description'] }}</span>?
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <br>
+                                                <br>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+        </main>
+        <script>
+            var selectedCat = localStorage.getItem('catSelection');
+            var selectedAcc = localStorage.getItem('accSelection');
+
+            if (selectedCat) {
+                document.getElementById('category-filter').value = selectedCat;
+            }
+
+            if (selectedAcc) {
+                document.getElementById('account-filter').value = selectedAcc;
+            }
+
+            const priceMinFilter = document.getElementById('price-min-filter');
+            const priceMaxFilter = document.getElementById('price-max-filter');
+            const priceMinOutput = document.getElementById('price-min-output');
+            const priceMaxOutput = document.getElementById('price-max-output');
+            const applyFiltersBtn = document.getElementById('apply-filters');
+            const clearFiltersBtn = document.getElementById('clear-filters');
+    
+            priceMinOutput.innerHTML = '$' + priceMinFilter.value;
+            priceMaxOutput.innerHTML = '$' + priceMaxFilter.value;
+    
+            priceMinFilter.addEventListener('input', function() {
+                priceMinOutput.innerHTML = '$' + priceMinFilter.value;
+            });
+    
+            priceMaxFilter.addEventListener('input', function() {
+                priceMaxOutput.innerHTML = '$' + priceMaxFilter.value;
+            });
+            
+            
+            //function applyFilter() {
+            //    var dropdown = document.getElementById('category-filter');
+            //    var selectedCat = dropdown.value;
+            //    var dropdown = document.getElementById('account-filter');
+            //    var selectedAcc = dropdown.value;
+
+            //    localStorage.setItem('catSelection', selectedCat);
+            //    localStorage.setItem('accSelection', selectedAcc);
+
+            //    const priceMin = priceMinFilter.value;
+            //    const priceMax = priceMaxFilter.value;
+            //    const category = document.getElementById('category-filter').value;
+            //    const account = document.getElementById('account-filter').value;
+    
+            //    const url = new URL(window.location.href);
+            //    url.searchParams.set('price_min', priceMin);
+            //    url.searchParams.set('price_max', priceMax);
+            //    url.searchParams.set('category', category);
+            //    url.searchParams.set('account', account);
+                
+            //    location.reload();
+            //}       
+
+            applyFiltersBtn.addEventListener('click', function() {
+                const priceMin = priceMinFilter.value;
+                const priceMax = priceMaxFilter.value;
+                const category = document.getElementById('category-filter').value;
+                const account = document.getElementById('account-filter').value;
+    
+                localStorage.setItem('catSelection', category);
+                localStorage.setItem('accSelection', account);
+
+                const url = new URL(window.location.href);
+                url.searchParams.set('price_min', priceMin);
+                url.searchParams.set('price_max', priceMax);
+                url.searchParams.set('category', category);
+                url.searchParams.set('account', account);
+                window.location.href = url.href;
+            });
+    
+            clearFiltersBtn.addEventListener('click', function() {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('price_min');
+                url.searchParams.delete('price_max');
+                url.searchParams.delete('category');
+                url.searchParams.delete('account');
+                window.location.href = url.href;
+            });
+        </script>
+        {% include 'footer.html' %}
+    </body>
+</html>

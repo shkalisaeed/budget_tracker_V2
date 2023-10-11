@@ -1,0 +1,81 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ · Cassowary Budget App</title>
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesFAQ.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'FAQ' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <head>
+    <div class="sidebar">
+      <ul>
+          <li>
+              <a href="{{ url_for('views.FAQDashboard') }}" class="active">Dashboard FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}">Budget Creation FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Budget Summary FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}">Expenses FAQs</a>
+          </li>
+          <li>
+            <a href="{{ url_for('views.FAQ_Investment') }}">Investments FAQs</a>
+         </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}">Calculators FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}">Goals FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Profile') }}">Profiles and Uploads FAQs</a>
+          </li>
+      </ul>
+    </div>
+    <header>
+      <h1>Dashboard FAQs & Documentation</h1>
+    </header>
+    </head>
+    <body>
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq">
+                  <input type="checkbox" id="faq1">
+                  <label for="faq1" class="faq-question">Can I customize the dashboard to show specific information that is important to me?</label>
+                  <div class="faq-answer">
+                    The current version of The Budget Manager offers a predefined dashboard layout. This design has been chosen to present a broad overview of the most pertinent financial information. However, the developers understand the importance of a customizable user experience and are actively working on an update that will allow users to customize their dashboards to better fit their individual needs.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq2">
+                  <label for="faq2" class="faq-question">Can I access detailed reports or transaction history from the dashboard? </label>
+                  <div class="faq-answer">
+                    The dashboard on The Budget Manager is designed to give you a high-level overview of your financial status at a glance. For more detailed reports or transaction history, you would need to navigate to the specific sections via the top panel. Each section will provide a more granular view of your financial data, including transaction histories and detailed reports on your budget, expenses, income, and investments.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq3">
+                  <label for="faq3" class="faq-question">How frequently is the dashboard updated with new data?</label>
+                  <div class="faq-answer">
+                    The dashboard on The Budget Manager is dynamic and updates in real-time. This means that every time you add a new entry, whether it's an expense, income, or a change in your budget or goals, the dashboard immediately reflects these changes. This ensures you always have the most accurate and up-to-date information on your financial status.
+                  </div>
+                </div>
+              </div>
+        </div>
+    </body>
+</html>

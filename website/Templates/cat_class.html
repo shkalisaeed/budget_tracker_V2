@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Category Classification</title>
+    <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body>
+    <h1>Category Classification</h1>
+    <form action="/cat_class" method="post">
+        <label for="description">Enter description:</label><br>
+        <textarea id="description" name="description" rows="4" cols="50">{{ description }}</textarea><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    {% if prediction %}
+        <h2>Prediction Result:</h2>
+        <p>User Input: {{ description }}</p>
+        <p>Predicted Category: {{ prediction }}</p>
+    {% endif %}
+</body>
+</html>

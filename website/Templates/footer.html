@@ -1,0 +1,109 @@
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/footer.css') }}">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+        rel="stylesheet">
+</head>
+{% if current_page == "landing" %}
+  <footer>
+  {% else %}
+    <footer style="margin-top: 5rem;">
+    {% endif %}
+    <div class="footercontainer">
+      <ul class="footer-col">
+        <li>
+          <img class="logo"
+               src="{{ url_for('static', filename='images/logo.png') }}"
+               style="margin-top: 1rem">
+        </li>
+        <li>
+          <ul class="footer-list">
+            <li>
+              <h2 style="color: white;">Quick Links</h2>
+            </li>
+            <li>
+              <a href="{{ url_for('views.profile') }}">Profile</a>
+            </li>
+            <li>
+              <a href="{{ url_for('views.home') }}">Dashboard</a>
+            </li>
+            <li>
+              <a href="{{ url_for('views.summary') }}">Budget Summary</a>
+            </li>
+            <li>
+              <a href="{{ url_for('views.budget_creator') }}">Budget Creator</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <ul class="footer-list">
+            <li>
+              <h2 style="color: white;">Account</h2>
+            </li>
+            <li>
+              <a href="{{ url_for('views.bills') }}">Bills</a>
+            </li>
+            <li>
+              <a href="{{ url_for('views.expenses') }}">Expenses</a>
+            </li>
+            <li>
+              <a href="{{ url_for('views.investment_tracking') }}">Investments</a>
+            </li>
+            <li>
+              <a href="{{ url_for('views.goals') }}">Goals</a>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <ul class="footer-list">
+            <li>
+              <h2 style="color: white;">Help</h2>
+            </li>
+            {% if current_page == "budget_creator" %}
+            <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}"> Budget Creator FAQ</a>
+            </li>
+            {% elif current_page == "summary" %}
+            <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Summary FAQ</a>
+            </li>
+            {% elif current_page == "expenses" %}
+            <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}">Expenses FAQ</a>
+            </li>
+            {% elif current_page == "investment_tracking" %}
+            <li>
+              <a href="{{ url_for('views.FAQ_Investment') }}">Investment FAQ</a>
+            </li>
+            {% elif current_page == "calc" %}
+            <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}">Calculator FAQ</a>
+            </li>
+            {% elif current_page == "bills" %}
+            <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQ</a>
+            </li>
+            {% elif current_page == "goals" %}
+            <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}">Goals FAQ</a>
+            </li>
+            {% endif %}
+            <li>
+              <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+            <!--
+            <li>
+              <a href="{{ url_for('views.FAQ') }}">About Us</a>
+            </li>
+          -->
+          </ul>
+        </li>
+      </ul>
+      <hr style="margin: 3rem auto; width: 50%;">
+      <p style="margin: 0;
+                margin-bottom: 1rem;
+                text-align: center;
+                color: white">&copy; 2023 Cassowary. All rights reserved.</p>
+    </div>
+  </footer>

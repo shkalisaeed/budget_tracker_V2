@@ -1,0 +1,97 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+html {
+    min-height: 100vh;
+}
+
+body {
+    background-color: purple;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.box {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgb(255, 255, 255);
+    padding: 2rem;
+    width: 400px;
+    margin: 1rem;
+}
+
+h1 {
+    /*color: purple;  Updated the color property to make the title yellow */
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Added this line to align form elements at the top */
+    width: 100%;
+}
+
+input, select {
+    width: 100%; /* Added width to ensure all input elements have the same width */
+}
+
+label, .test {
+    /*color: purple;*/
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+input {
+    background-color: white;
+    border: 1px solid purple;
+    border-radius: 5px;
+    /*color: purple;*/
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+}
+
+.birthdate-table {
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.birthdate-table td {
+    padding: 0 0.5rem;
+    width: 33.33%;
+}
+
+input[id="birth-year"],
+input[id="birth-month"],
+input[id="birth-date"] {
+    width: 100%;
+}
+
+button, .btn {
+    background-color: white;
+    border: 1px solid purple;
+    border-radius: 5px;
+    color: purple;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+button:hover, .btn:hover {
+    background-color: purple;
+    border-color: purple;
+    color: white;
+}

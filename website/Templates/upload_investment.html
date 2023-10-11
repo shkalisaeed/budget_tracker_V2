@@ -1,0 +1,74 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesUpEXP.css') }}">
+    <meta charset="UTF-8">
+    <title>Upload Investment · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+{% endblock %}
+<body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "profile" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+</body>
+{% block body %}
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('uploads.upload_csv') }}">Upload CSV</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_expenses') }}">Upload Individual Expense</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_investment') }}" class="active">Upload Investments</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_bills') }}">Upload Bills</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_goals') }}">Upload Goals</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.budget_sharing') }}">Budget Sharing</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.income') }}">Income</a>
+            </li>
+            <li>
+                <a href="{{ url_for('auth.change_password', user_id=current_user.user_id) }}">Change Password</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+        </ul>
+    </div>
+    <header>
+        <h1>Upload Investment</h1>
+    </header>
+    <div class="content">
+        <form action="/upload_investment" method="POST">
+            {{ investment_form.hidden_tag() }}
+            <label for="amount"></label>
+            {{ wtf.form_field(investment_form.share_amount, id="amount") }}
+            <label for="category"></label>
+            {{ wtf.form_field(investment_form.stock_index, id="category") }}
+            <label for="description"></label>
+            {{ wtf.form_field(investment_form.stock_name, id="description") }}
+            <button type="submit" class="button">Input Investment</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p class="bg-info" style="padding: 15px;">
+                    {% for msg in messages %}
+                        {{ msg }}
+                        <br>
+                    {% endfor %}
+                </p>
+            {% endif %}
+        {% endwith %}
+    </div>
+{% endblock body %}

@@ -1,0 +1,72 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ · Cassowary Budget App</title>
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesFAQ.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'FAQ' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <head>
+    <div class="sidebar">
+      <ul>
+          <li>
+              <a href="{{ url_for('views.FAQDashboard') }}">Dashboard FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}">Budget Creation FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Budget Summary FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}">Expenses FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Investment') }}">Investments FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}">Calculators FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}" class="active">Goals FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Profile') }}">Profiles and Uploads FAQs</a>
+          </li>
+      </ul>
+    </div>
+    <header>
+      <h1>Goals FAQs & Documentation</h1>
+    </header>
+    </head>
+    <body>
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq">
+                    <input type="checkbox" id="faq1">
+                    <label for="faq1" class="faq-question">How do I set financial goals in The Budget Manager?</label>
+                    <div class="faq-answer">
+                        Setting financial goals in The Budget Manager is easy. You can set your financial goals in the "Goals" section by clicking on the "Add New" button. This allows you to define what you are aiming for and track your progress over time.
+                    </div>
+                </div>
+                <hr>
+        
+                <div class="faq">
+                    <input type="checkbox" id="faq2">
+                    <label for="faq2" class="faq-question">Can I track my progress toward my goals in The Budget Manager?</label>
+                    <div class="faq-answer">
+                        Certainly. The Budget Manager allows you to track your progress towards your financial goals in the "Goals" section. If you need to make any adjustments to a goal, you can do so by clicking on the "Edit" button next to the goal in question. This feature ensures that your goals stay relevant and aligned with your current financial situation.
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </body>
+</html>

@@ -1,0 +1,75 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesProf.css') }}">
+    <meta charset="UTF-8">
+    <title>Profile · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+{% endblock %}
+<body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "profile" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+</body>
+{% block body %}
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('uploads.upload_csv') }}">Upload CSV</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_expenses') }}">Upload Individual Expense</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_investment') }}">Upload Investments</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_bills') }}">Upload Bills</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_goals') }}">Upload Goals</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.budget_sharing') }}">Budget Sharing</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.income') }}">Income</a>
+            </li>
+            <li>
+                <a href="{{ url_for('auth.change_password', user_id=current_user.user_id) }}">Change Password</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+        </ul>
+    </div>
+    <header>
+        <h1>Account Details</h1>
+    </header>
+    <div class="container">
+        <!--<img src="{{ url_for('static', filename='profile.png') }}"
+     alt="Profile Picture">-->
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td>{{ current_user.first_name + " " + current_user.last_name }}</td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td>{{ current_user.email }}</td>
+            </tr>
+            <tr>
+                <td>Account Number:</td>
+                <td>{{ current_user.user_id }}</td>
+            </tr>
+        </table>
+        <div style="display: flex;">
+            <a class="log-button" href="logout" style="margin-right: 10px;">Logout</a>
+            <a class="delete-button"
+               href="delete_account/{{ current_user.user_id }}">Delete Account</a>
+        </div>
+    </div>
+{% endblock %}

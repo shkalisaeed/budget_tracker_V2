@@ -1,0 +1,63 @@
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+        rel="stylesheet">
+</head>
+<div class="navbar">
+  <nav>
+    <a href="{{ url_for('views.home') }}" style="padding: 0 !important;">
+      <img class="logo"
+           src="{{ url_for('static', filename='images/logo.png') }}">
+    </a>
+    <h4>
+      <a href="{{ url_for('views.home') }}"
+         {% if current_page == 'home' %}class="active"{% endif %}
+         style="color:white;
+                text-decoration:none;
+                white-space: nowrap">Cassowary Budget Tracker</a>
+    </h4>
+    <ul>
+      <!--<li>
+        <a class="lightbutton">Light</a>
+      </li>
+      <li>
+        <a class="darkbutton">Dark</a>
+      </li>
+      -->
+      <li class="one">
+        <a href="{{ url_for('views.budget_creator') }}"
+           {% if current_page == 'budget_creator' %}class="active"{% endif %}>Budget Creator</a>
+      </li>
+      <li class="two">
+        <a href="{{ url_for('views.summary') }}"
+           {% if current_page == 'summary' %}class="active"{% endif %}>Budget Summary</a>
+      </li>
+      <li class="three">
+        <a href="{{ url_for('views.expenses') }}"
+           {% if current_page == 'expenses' %}class="active"{% endif %}>Expenses</a>
+      </li>
+      <li class="four">
+        <a href="{{ url_for('views.investment_tracking') }}"
+           {% if current_page == 'investment_tracking' %}class="active"{% endif %}>Investments</a>
+      </li>
+      <li class="five">
+        <a href="{{ url_for('views.calc') }}"
+           {% if current_page == 'calc' %}class="active"{% endif %}>Calculators</a>
+      </li>
+      <li class="six">
+        <a href="{{ url_for('views.bills') }}"
+           {% if current_page == 'bills' %}class="active"{% endif %}>Bills</a>
+      </li>
+      <li class="seven">
+        <a href="{{ url_for('views.goals') }}"
+           {% if current_page == 'goals' %}class="active"{% endif %}>Goals</a>
+      </li>
+      <li class="eight">
+        <a href="{{ url_for('views.profile') }}"
+           {% if current_page == 'profile' %}class="active"{% endif %}>Profile</a>
+      </li>
+    </ul>
+  </nav>
+</div>

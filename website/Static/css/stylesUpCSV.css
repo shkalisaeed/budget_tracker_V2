@@ -1,0 +1,143 @@
+body {
+  margin: 0;
+  overflow-y: scroll;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  margin-top: 100px; /* Adjust the value to create space for the navbar */
+  margin-left: 15rem;
+  padding: 20px;
+}
+.content form {
+  margin-bottom: 20px; /* Add margin at the bottom to separate the form from the example section */
+}
+
+.container {
+    /*border: 1px solid #ccc;*/
+    position: relative;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    margin-left: 255px;
+    max-width: 800px;
+  }
+  
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    margin-top: 4rem;
+    margin-left: 15rem;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 64;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #f5f5f5;
+    padding: 20px;
+    z-index: 2;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar li {
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .sidebar li a {
+    display: block;
+    padding: 5px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .sidebar li a:hover {
+    background-color: #eaeaea;
+  }
+
+  .sidebar .active {
+	font-weight: bold;
+}
+
+.button {
+    background-color: purple;
+    border: 2px solid purple;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 12px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+    width: 50%;
+    margin-top: 20px;
+  }
+  
+  .button:hover {
+    background-color: white;
+    color: purple;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
+  }
+
+  .example-section h1 {
+    color: purple;
+    margin-top: 0;
+}
+ .example-section {
+    margin-top: 20px;
+    text-align: center;
+  } 
+
+  .example-text {
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.prerequisites-list {
+    text-align: left;
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+
+.date-conversion-text {
+  margin-top: 20px;
+  font-weight: bold;
+  text-align: left;
+}
+
+.date-conversion-list {
+  text-align: left;
+  list-style-type: decimal;
+  margin-left: 20px;
+}
+
+ .csv-image {
+    display: block;
+
+    margin-top: 10px;
+  }

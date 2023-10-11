@@ -1,0 +1,109 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesUpEXP.css') }}">
+    <meta charset="UTF-8">
+    <title>Upload Goals · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+{% endblock %}
+<body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "profile" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+</body>
+{% block body %}
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('uploads.upload_csv') }}">Upload CSV</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_expenses') }}">Upload Individual Expense</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_investment') }}">Upload Investments</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_bills') }}">Upload Bills</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_goals') }}" class="active">Upload Goals</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.budget_sharing') }}">Budget Sharing</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.income') }}">Income</a>
+            </li>
+            <li>
+                <a href="{{ url_for('auth.change_password', user_id=current_user.user_id) }}">Change Password</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+        </ul>
+    </div>
+    <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Goals · Cassowary Budget App</title>
+            <link rel="stylesheet" type="text/css" href="/Static/css/stylesEXP.css">
+            <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+                  rel="stylesheet">
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                    crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+                    integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+                    crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+                    integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+                    crossorigin="anonymous"></script>
+            <link rel="icon"
+                  href="{{ url_for('static', filename='images/favicon.ico') }}"
+                  type="image/x-icon">
+        </head>
+        <body style="font-family: 'Raleway', sans-serif;">
+            {% set current_page = "profile" %}  <!-- Set the current page variable -->
+            {% include 'navbar.html' %}
+            <!-- Add your content here -->
+            <header>
+                <h1>Upload Goals</h1>
+            </header>
+            <main>
+                <div class="content">
+                    <form action="/upload_goals" method="POST">
+                        <div>Please input the details regarding your saving goal.</div>
+                        <br>
+                        <br>
+                        {{ goals_form.hidden_tag() }}
+                        <label for="bgoal_name"></label>
+                        {{ wtf.form_field(goals_form.goal_name, id="goal_name") }}
+                        <label for="goal_desc"></label>
+                        {{ wtf.form_field(goals_form.goal_desc, id="goal_desc") }}
+                        <label for="goal_amount"></label>
+                        {{ wtf.form_field(goals_form.goal_amount, id="goal_amount") }}
+                        <label for="goal_date"></label>
+                        {{ wtf.form_field(goals_form.goal_date, id="goal_date") }}
+                        <label for="contribution_frequency"></label>
+                        {{ wtf.form_field(goals_form.contribution_frequency, id="contribution_frequency") }}
+                        <button type="submit" class="button">Upload Goal</button>
+                    </form>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <p class="bg-info" style="padding: 15px;">
+                                {% for msg in messages %}
+                                    {{ msg }}
+                                    <br>
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </main>
+        </body>
+    </html>
+{% endblock %}

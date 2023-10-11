@@ -1,0 +1,5 @@
+instance/
+website/__pycache__/
+website/Static/images/CAPTCHA.png
+website/Static/*.ics
+website/Static/*.csv

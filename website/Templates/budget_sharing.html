@@ -1,0 +1,166 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesUpEXP.css') }}">
+    <meta charset="UTF-8">
+    <title>Budget Sharing · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+{% endblock %}
+<body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "profile" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+</body>
+{% block body %}
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('uploads.upload_csv') }}">Upload CSV</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_expenses') }}">Upload Individual Expense</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_investment') }}">Upload Investments</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_bills') }}">Upload Bills</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_goals') }}">Upload Goals</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.budget_sharing') }}">Budget Sharing</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.income') }}">Income</a>
+            </li>
+            <li>
+                <a href="{{ url_for('auth.change_password', user_id=current_user.user_id) }}">Change Password</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+        </ul>
+    </div>
+    <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Bills · Cassowary Budget App</title>
+            <link rel="stylesheet" type="text/css" href="/Static/css/stylesEXP.css">
+            <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+                  rel="stylesheet">
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                    crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+                    integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+                    crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+                    integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+                    crossorigin="anonymous"></script>
+            <link rel="icon"
+                  href="{{ url_for('static', filename='images/favicon.ico') }}"
+                  type="image/x-icon">
+        </head>
+        <body style="font-family: 'Raleway', sans-serif;">
+            {% set current_page = "profile" %}  <!-- Set the current page variable -->
+            {% include 'navbar.html' %}
+            <!-- Add your content here -->
+            <header>
+                <h1>Budget Sharing</h1>
+            </header>
+            <main>
+                <!-- Section 1: Sharing a budget by entering another user's email -->
+                <div class="content">
+                    <form action="/budget_sharing" method="POST">
+                        <h1 style="text-align:center">Please enter the receiver's email:</h1>
+                        {{ sharing_form.hidden_tag() }}
+                        <label for="email"></label>
+                        {{ wtf.form_field(sharing_form.email, id="email") }}
+                        <button type="submit" class="button">Enter</button>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <p class="bg-info" style="padding: 15px;">
+                                    {% for msg in messages %}
+                                        {{ msg }}
+                                        <br>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        {% endwith %}
+                    </form>
+                </div>
+                <!-- Section 2: Displaying all budgets that has been shared to the current user -->
+                {% if shared_budgets %}
+                    <h1 style="text-align:center">Budgets shared with you:</h1>
+                    <table class="shared_budgets_table"
+                           style="width: 1000px;
+                                  margin-left: auto;
+                                  margin-right: auto">
+                        <tr>
+                            <th>Sender</th>
+                            <th>Categories and Amounts</th>
+                            <th>Actions</th>
+                        </tr>
+                        {% for budget in shared_budgets %}
+                            <tr>
+                                <td>{{ budget.sender_name }}</td>
+                                <td>
+                                    {% for category, amount in my_zip(budget.categories, budget.amounts) %}<p>{{ category }}: {{ amount }}</p>{% endfor %}
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('views.import_budget', shared_budget_id=budget['shared_budget_id']) }}"
+                                          method="POST">
+                                        <button class="submit">Import Budget</button>
+                                    </form>
+                                    <button type="button"
+                                            class="btn btn-danger"
+                                            data-toggle="modal"
+                                            data-target="#delete_shared_budget_{{ budget['shared_budget_id'] }}">
+                                        Delete
+                                    </button>
+                                    <div class="modal fade"
+                                         id="delete_shared_budget_{{ budget['shared_budget_id'] }}"
+                                         role="dialog"
+                                         aria-labelledby="basicModal"
+                                         aria-hidden="true"
+                                         style="z-index: 9999">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                    <h4 class="modal-title" id="myModalLabel">Delete a shared budget</h4>
+                                                </div>
+                                                <form action="{{ url_for('views.delete_shared_budget', shared_budget_id=budget['shared_budget_id']) }}"
+                                                      method="post"
+                                                      style="display: inline">
+                                                    <div class="modal-body">
+                                                        <div class="form-group row">
+                                                            <label class="col-sm-12 col-form-label">
+                                                                Do you want to delete this budget shared by <span style='font-weight:bold;color:red'>{{ budget['sender_name'] }}</span>?
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <br>
+                                                        <br>
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </main>
+        </body>
+    </html>
+{% endblock %}

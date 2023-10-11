@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Repayment · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/repay.css') }}">
+    <!-- Add the CSS file for tabs -->
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+  </head>
+  <body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "calc" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+    <div class="tab-container">
+      <ul class="tabs">
+        <li>
+          <a href="{{ url_for('views.calc') }}">Savings Calculator
+          </li>
+          <li class="active">
+            <a href="{{ url_for('views.repayment_calculator') }}">Repayment Calculator</a>
+          </li>
+          <li>
+            <a href="{{ url_for('views.stamp_duty_calculator') }}">Stamp Duty Calculator</a>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <!-- Add the content for each tab here -->
+          <body>
+            <h1>Loan Repayment Calculator</h1>
+            <form method="POST" action="{{ request.path }}">
+              <div class="input">
+                <div class="form-group">
+                  <label for="principal">Loan Amount ($)</label>
+                  <br>
+                  <input type="text"
+                         id="principal"
+                         name="principal"
+                         value="{{ request.form.get('principal', '') }}"
+                         required>
+                </div>
+                <br>
+                <div class="form-group">
+                  <label for="interest_rate">Annual Interest Rate (%)</label>
+                  <br>
+                  <input type="text"
+                         id="interest_rate"
+                         name="interest_rate"
+                         value="{{ request.form.get('interest_rate', '') }}"
+                         required>
+                </div>
+                <br>
+                <div class="form-group">
+                  <label for="term">Loan Term (years)</label>
+                  <br>
+                  <input type="text"
+                         id="term"
+                         name="term"
+                         value="{{ request.form.get('term', '') }}"
+                         required>
+                </div>
+                <br>
+                <div class="form-group">
+                  <label for="frequency">Repayment Frequency:</label>
+                  <br>
+                  <select name="frequency" id="frequency" required>
+                    <option value=""
+                            {% if not request.form.get('frequency') %}selected{% endif %}
+                            disabled>Choose a repayment frequency</option>
+                    <option value="weekly"
+                            {% if request.form.get('frequency') == 'weekly' %}selected{% endif %}>Weekly</option>
+                    <option value="monthly"
+                            {% if request.form.get('frequency') == 'monthly' %}selected{% endif %}>Monthly</option>
+                    <option value="quarterly"
+                            {% if request.form.get('frequency') == 'quarterly' %}selected{% endif %}>Quarterly</option>
+                    <option value="yearly"
+                            {% if request.form.get('frequency') == 'yearly' %}selected{% endif %}>Yearly</option>
+                  </select>
+                </div>
+                <br>
+                <div class="button-container">
+                  <input type="submit" value="Calculate">
+                  <input type="reset">
+                </div>
+              </div>
+            </form>
+            {% if monthly_payment and total_payment %}
+              <h2>Loan Repayment Results:</h2>
+              <p>
+                Your repayments would be <strong>${{ "{:.2f}".format(monthly_payment) }}</strong> {{ frequency }}
+              </p>
+              <p>
+                Total Loan Repayments: <strong>${{ "{:.2f}".format(total_payment) }}</strong>
+              </p>
+              <p>
+                Total Interest Charged: <strong>${{ "{:.2f}".format(total_payment-principal) }}</strong>
+              </p>
+            {% endif %}
+            <title>Interactive Line Graph</title>
+            <!-- Include the Google Charts library -->
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script type="text/javascript">
+            // Load the Visualization API and the corechart package.
+            google.charts.load('current', { 'packages': ['corechart'] });
+            google.charts.setOnLoadCallback(drawChart);
+
+            // Define your data and options
+            function drawChart() {
+              var data = new google.visualization.DataTable();
+              data.addColumn('number', 'X');
+              data.addColumn('number', 'Y');
+              data.addColumn({type: 'string', role: 'tooltip'});
+              var rows = {{ rows | safe }};
+              for (var i = 0; i < rows.length; i++) {
+                var year = rows[i][0];
+                var principal = rows[i][1];
+                var tooltip = 'Repayment number: ' + year + '\nPrincipal Remaining: $' + principal.toFixed(2); // Customize the tooltip content here
+                data.addRow([year, principal, tooltip]);
+              }
+
+              var options = {
+                  title: 'Loan Repayment Schedule',
+                  curveType: 'function',
+                  hAxis: {
+                    title: 'Payment Number'
+                  },
+                  vAxis: {
+                    title: 'Outstanding Loan Balance'
+                  },
+                  legend: 'none',
+                  tooltip: { isHtml: true }
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart-container'));
+                chart.draw(data, options);
+            }
+            </script>
+            <body>
+              <!-- Place the chart container where you want the chart to appear -->
+              <div id="chart-container" style="width: 100%; height: 400px;"></div>
+            </body>
+          </body>
+        </div>
+      </div>
+      {% include 'footer.html' %}
+    </body>
+  </html>

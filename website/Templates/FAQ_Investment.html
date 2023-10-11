@@ -1,0 +1,81 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ · Cassowary Budget App</title>
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesFAQ.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'FAQ' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <head>
+    <div class="sidebar">
+      <ul>
+          <li>
+              <a href="{{ url_for('views.FAQDashboard') }}">Dashboard FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}">Budget Creation FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Budget Summary FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}">Expenses FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Investment') }}" class="active">Investments FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}">Calculators FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}">Goals FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Profile') }}">Profiles and Uploads FAQs</a>
+          </li>
+      </ul>
+    </div>
+    <header>
+      <h1>Investments FAQs & Documentation</h1>
+    </header>
+    </head>
+    <body>
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq">
+                    <input type="checkbox" id="faq1">
+                    <label for="faq1" class="faq-question">Can I add different types of investments, such as stocks, bonds, or mutual funds, in The Budget Manager?</label>
+                    <div class="faq-answer">
+                        Absolutely. Currently, The Budget Manager supports the addition of a range of investment types including cryptocurrencies, stocks, and bonds. This way, you can keep track of all your investments in one place. We're always working to enhance the functionality of our application, and future updates will include the capability to add even more types of investments.
+                    </div>
+                </div>
+                <hr>
+        
+                <div class="faq">
+                    <input type="checkbox" id="faq2">
+                    <label for="faq2" class="faq-question">Does The Budget Manager provide real-time or delayed investment portfolio updates?</label>
+                    <div class="faq-answer">
+                        The Budget Manager offers real-time updates on your investment portfolio. This means that whenever you log into the application, you can see the current value of your investments based on the latest market data. This allows you to monitor your investments more effectively and make informed financial decisions.
+                    </div>
+                </div>
+                <hr>
+        
+                <div class="faq">
+                    <input type="checkbox" id="faq3">
+                    <label for="faq3" class="faq-question">Does The Budget Manager offer analysis for my investments?</label>
+                    <div class="faq-answer">
+                        The Budget Manager does not offer analysis reports for your investments. However, it does provide the data nessesary to do so.
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </body>
+</html>

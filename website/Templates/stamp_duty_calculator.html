@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Stamp Duty · Cassowary Budget App</title>
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/StampCalc.css') }}"> <!-- Add the CSS file for tabs -->
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'calc' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+
+  <div class="tab-container">
+    <ul class="tabs">
+      <li><a href="{{ url_for('views.calc') }}">Savings Calculator</li>
+      <li><a href="{{ url_for('views.repayment_calculator') }}">Repayment Calculator</a></li>
+      <li class="active"><a href="{{ url_for('views.stamp_duty_calculator') }}">Stamp Duty Calculator</a></li>
+    </ul>
+    <div class="tab-content">
+      <!-- Add the content for each tab here -->
+      <h1>Stamp Duty Calculator</h1>
+      <form method="POST" action="{{ request.path }}">
+        <div class = "input">
+          <div class="form-group">
+            <label for="Type">Property Type:</label><br>
+            <select name="Type" id="Type" required>
+              <option value="" {% if not request.form.get('Type') %}selected{% endif %} disabled>Choose a Type</option>
+              <option value="Existing" {% if request.form.get('Type') == 'Existing' %}selected{% endif %}>an exsisting property</option>
+              <!-- <option value="New" {% if request.form.get('Type') == 'New' %}selected{% endif %}>a newly built property</option> -->
+              <!-- <option value="Vacant" {% if request.form.get('Type') == 'Vacant' %}selected{% endif %}>a vacant plot of land</option> -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="State">State:</label><br>
+            <select name="State" id="State" required>
+              <option value="" {% if not request.form.get('State') %}selected{% endif %} disabled>Choose a State</option>
+              <option value="VIC" {% if request.form.get('State') == 'VIC' %}selected{% endif %}>VIC</option>
+              <option value="NSW" {% if request.form.get('State') == 'NSW' %}selected{% endif %}>NSW</option>
+              <option value="QLD" {% if request.form.get('State') == 'QLD' %}selected{% endif %}>QLD</option>
+              <!-- <option value="SA" {% if request.form.get('State') == 'SA' %}selected{% endif %}>SA</option> -->
+              <!-- <option value="WA" {% if request.form.get('State') == 'WA' %}selected{% endif %}>WA</option> -->
+              <!-- <option value="NT" {% if request.form.get('State') == 'NT' %}selected{% endif %}>NT</option> -->
+              <!-- <option value="ACT" {% if request.form.get('State') == 'ACT' %}selected{% endif %}>ACT</option> -->
+            </select>
+          </div>
+          <div class="form-group"> 
+            <label for="property_value">Property Value:</label><br>
+            <input type="number" name="property_value" value="{{ request.form.get('property_value', '') }}" required>
+          </div>
+          <div class="button-container">
+            <input type="submit" value="Calculate">
+            <input type="reset">
+          </div>
+        </div>
+      </form>
+      {% if stamp_duty %}
+      <h2>Your Government (stamp duty) fees would be {{ (stamp_duty+reg_mortgage+reg_mortgage+reg_transfer)|format_currency }}</h2>
+      <p><b>Breakdown of upfront costs as of June 2021</b></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Fee Type</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="#" onclick="togglePopup('stamp')">Property Stamp Duty:</a></td>
+            <td>{{ stamp_duty|format_currency }}</td>
+          </tr>
+          <tr>
+            <td><a href="#" onclick="togglePopup('mortgage')">Registration of mortgage:</a></td>
+            <td>{{ reg_mortgage|format_currency }}</td>
+          </tr>
+          <tr>
+            <td><a href="#" onclick="togglePopup('discharge')">Registration of discharge:</a></td>
+            <td>{{ discharge|format_currency }}</td>
+          </tr>
+          <tr>
+            <td><a href="#" onclick="togglePopup('transfer')">Registration of transfer:</a></td>
+            <td>{{ reg_transfer|format_currency }}</td>
+          </tr>
+        </tbody>
+      </table>
+    
+      <div id="popup-stamp" class="popup" style="display: none;">
+        <p>A state or territory government fee that you'll need to pay around settlement.</p>
+      </div>
+      <div id="popup-mortgage" class="popup" style="display: none;">
+        <p>A state or territory government fee to register the mortgage on the title of the property.</p>
+      </div>
+      <div id="popup-discharge" class="popup" style="display: none;">
+        <p>A state or territory government fee to remove the seller’s existing mortgage from the property title.</p>
+      </div>
+      <div id="popup-transfer" class="popup" style="display: none;">
+        <p>A state or territory government fee to transfer the property's title from the seller to the buyer.</p>
+      </div>
+    
+      <script>
+        function togglePopup(popupId) {
+          var popup = document.getElementById("popup-" + popupId);
+          var popups = document.getElementsByClassName("popup");
+      
+          // Close all other open popups
+          for (var i = 0; i < popups.length; i++) {
+            if (popups[i].id !== "popup-" + popupId) {
+              popups[i].style.display = "none";
+            }
+          }
+      
+          // Toggle display of the clicked popup
+          if (popup.style.display === "none") {
+            popup.style.display = "block";
+          } else {
+            popup.style.display = "none";
+          }
+        }
+      </script> 
+    {% endif %}
+    </div>
+  </div>
+  {% include 'footer.html' %}
+</body>
+</html>

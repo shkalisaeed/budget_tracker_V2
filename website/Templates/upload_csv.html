@@ -1,0 +1,119 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesUpCSV.css') }}">
+    <meta charset="UTF-8">
+    <title>Upload CSV · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+{% endblock %}
+<body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "profile" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+</body>
+{% block body %}
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('uploads.upload_csv') }}" class="active">Upload CSV</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_expenses') }}">Upload Individual Expense</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_investment') }}">Upload Investments</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_bills') }}">Upload Bills</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_goals') }}">Upload Goals</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.budget_sharing') }}">Budget Sharing</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.income') }}">Income</a>
+            </li>
+            <li>
+                <a href="{{ url_for('auth.change_password', user_id=current_user.user_id) }}">Change Password</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+        </ul>
+    </div>
+    <header>
+        <h1>Upload CSV</h1>
+    </header>
+    <div class="content">
+        <form action="/upload_csv" method="POST" enctype="multipart/form-data">
+            <label for="file">File:</label>
+            <input type="file" id="file" name="file">
+            <br>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p class="bg-info" style="padding: 15px;">
+                        {% for msg in messages %}
+                            {{ msg }}
+                            <br>
+                        {% endfor %}
+                    </p>
+                {% endif %}
+            {% endwith %}
+            <!-- Account tyoe dropdown here -->
+            <label for="account-type">Account Type:</label>
+            <select name="account-type" id="account-type">
+                <option value="debit">Debit</option>
+                <option value="credit">Credit</option>
+                <option value="other">Other (Type New)</option>
+            </select>
+            <br>
+            <div id="new-account-section" style="display: none;">
+                <label for="new-account">New Account:</label>
+                <input type="text" name="new-account" id="new-account">
+            </div>
+            <br>
+            <script>
+            var accountTypeDropdown = document.getElementById("account-type");
+            var newAccountSection = document.getElementById("new-account-section");
+      
+            accountTypeDropdown.addEventListener("change", function() {
+              if (accountTypeDropdown.value === "other") {
+                newAccountSection.style.display = "block";
+              } else {
+                newAccountSection.style.display = "none";
+              }
+            });
+            </script>
+            <button type="submit" class="button">Upload CSV</button>
+        </form>
+        <div class="example-section">
+            <h1>Example</h1>
+            <p class="example-text">The image below shows the format of the CSV that needs to be uploaded:</p>
+            <ul class="prerequisites-list">
+                <li>Date in the first column</li>
+                <li>Transaction Amount in the second column</li>
+                <li>Transaction Description in the third column</li>
+                <li>Date in DD/MM/YYYY format (day/month/year)</li>
+                <li>All income transactions will be disregarded</li>
+            </ul>
+            <p class="date-conversion-text">To convert the date format in Excel:</p>
+            <ol class="date-conversion-list">
+                <li>Select the column containing the dates in your Excel sheet.</li>
+                <li>Right-click and choose "Format Cells" from the context menu.</li>
+                <li>In the "Format Cells" dialog box, go to the "Number" tab.</li>
+                <li>Select "Custom" from the category list.</li>
+                <li>In the "Type" field, enter "DD/MM/YYYY".</li>
+                <li>Click "OK" to apply the date format to the selected column.</li>
+            </ol>
+            <p class="example-text">Example CSV Screenshot:</p>
+            <img src="{{ url_for('static', filename='images/csv_template.png') }}"
+                 alt="CSV Upload Template"
+                 class="csv-image">
+        </div>
+    </div>
+{% endblock %}

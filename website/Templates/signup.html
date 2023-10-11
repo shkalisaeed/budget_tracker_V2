@@ -1,0 +1,48 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/signup.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+    <title>Signup · Cassowary Budget App</title>
+{% endblock %}
+{% block body %}
+    <link rel="stylesheet" href="/Static/css/signup.css">
+    <div class="box">
+        <h1>Signup</h1>
+        <!-- Moved the <h1> tag inside the .box class -->
+        <form action="/signup" method="POST">
+            {{ signup_form.hidden_tag() }}
+            <div>
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <p class="bg-info" style="padding: 15px;">
+                            {% for msg in messages %}
+                                {{ msg }}
+                                <br>
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            <div class="email">{{ wtf.form_field(signup_form.email) }}</div>
+            <div class="password">{{ wtf.form_field(signup_form.password) }}</div>
+            <div class="password2">{{ wtf.form_field(signup_form.password2) }}</div>
+            <div class="first_name">{{ wtf.form_field(signup_form.first_name) }}</div>
+            <div class="last_name">{{ wtf.form_field(signup_form.last_name) }}</div>
+            <div class="birthday">{{ wtf.form_field(signup_form.birthday) }}</div>
+            <div class="captcha">{{ wtf.form_field(signup_form.captcha) }}</div>
+            <img src="{{ url_for('static', filename='images/CAPTCHA.png') }}"
+                 alt="CAPTCHA">
+            <p></p>
+            <button type="submit" class="btn btn-primary">Signup</button>
+            <p class="small-xl pt-3 text-center">
+                <span class="text-muted"><b>Already a member?</b></span>
+                <a href="login">Login</a>
+            </p>
+        </form>
+    </div>
+{% endblock %}

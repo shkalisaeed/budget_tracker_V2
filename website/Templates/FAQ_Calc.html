@@ -1,0 +1,72 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ · Cassowary Budget App</title>
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesFAQ.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'FAQ' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <head>
+    <div class="sidebar">
+      <ul>
+          <li>
+              <a href="{{ url_for('views.FAQDashboard') }}">Dashboard FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}">Budget Creation FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Budget Summary FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}">Expenses FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Investment') }}">Investments FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}" class="active">Calculators FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}">Goals FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Profile') }}">Profiles and Uploads FAQs</a>
+          </li>
+      </ul>
+    </div>
+    <header>
+      <h1>Calculators FAQs & Documentation</h1>
+    </header>
+    </head>
+    <body>
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq">
+                    <input type="checkbox" id="faq1">
+                    <label for="faq1" class="faq-question">Can I calculate loan repayment schedules or mortgage payments using the calculators in The Budget Manager?</label>
+                    <div class="faq-answer">
+                        Yes, you can. The Budget Manager includes a mortgage payments calculator specifically designed for this purpose. By inputting your mortgage details, you can see a detailed repayment schedule, helping you plan your payments and manage your finances better.
+                    </div>
+                </div>
+                <hr>
+        
+                <div class="faq">
+                    <input type="checkbox" id="faq2">
+                    <label for="faq2" class="faq-question">Are the calculators in The Budget Manager customizable or adjustable based on my specific financial situation?</label>
+                    <div class="faq-answer">
+                        Yes, they are. The Budget Manager's calculators are designed to be flexible. You can input your own data, either manually or by uploading a csv file. This allows the calculators to adjust to your specific financial situation and provide personalized calculations.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

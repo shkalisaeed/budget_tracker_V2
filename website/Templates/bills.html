@@ -1,0 +1,188 @@
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Bills · Cassowary Budget App</title>
+        <link rel="stylesheet" type="text/css" href="/Static/css/stylesEXP.css">
+        <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+                rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+                integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+                integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+                crossorigin="anonymous"></script>
+        <link rel="icon"
+                href="{{ url_for('static', filename='images/favicon.ico') }}"
+                type="image/x-icon">
+    </head>
+    <body style="font-family: 'Raleway', sans-serif;">
+        {% set current_page = "bills" %}  <!-- Set the current page variable -->
+        {% include 'navbar.html' %}
+        <!-- Add your content here -->
+        <header>
+            <h1>Bills</h1>
+        </header>
+        <main>
+            <!-- Display the transaction table here -->
+            {% if bill_count == 0 %}
+                                    <strong style="font-size: 90px; margin: 12rem auto; margin-bottom: 0; text-align: center;">No bills found. Add some <a href="{{ url_for('uploads.upload_bills') }}">here.</a></strong>
+                                    <img class="notfound" src="{{ url_for('static', filename='images/notfound.png') }}">
+
+            {% else %}
+            <table class="transactions_table" border="1" cellspacing="0">
+                <tr>
+                    <th>Bill</th>
+                    <th>Due</th>
+                    <th>Description</th>
+                    <th>Frequency</th>
+                    <th>Actions</th>
+                </tr>
+                {% for user_bill in user_bills %}
+                    <tr>
+                        <td>{{ user_bill.bill_name }}</td>
+                        <td>{{ user_bill.bill_due_date }}</td>
+                        <td>{{ user_bill.bill_description }}</td>
+                        <td>
+                            {% if user_bill.bill_options == "Custom Days" %}{{ user_bill.bill_custom_freq }} Days{% endif %}
+                            {% if user_bill.bill_options != "Custom Days" %}{{ user_bill.bill_options }}{% endif %}
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-success"
+                                    data-toggle="modal"
+                                    data-target="#update_bill_2_{{ user_bill['bill_id'] }}">Update</button>
+                            <div class="modal fade"
+                                    id="update_bill_2_{{ user_bill['bill_id'] }}"
+                                    tabindex="-1"
+                                    role="dialog"
+                                    aria-labelledby="basicModal"
+                                    aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" id="myModalLabel">Update a bill</h4>
+                                        </div>
+                                        <form action="{{ url_for('views.update_bill_2', bill_id=user_bill['bill_id']) }}"
+                                                method="post">
+                                            <div class="modal-body">
+                                                <div class="form-group row">
+                                                    <br>
+                                                    <label for="Name" class="col-xs-2 control-label">Name</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text"
+                                                                class="form-control"
+                                                                name="Name"
+                                                                value="{{ user_bill['bill_name'] }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <br>
+                                                    <label for="Date" class="col-xs-2 control-label">Date</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="date"
+                                                                class="form-control"
+                                                                name="Date"
+                                                                value="{{ user_bill['bill_due_date'] }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <br>
+                                                    <label for="Description" class="col-xs-2 control-label">Description</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text"
+                                                                class="form-control"
+                                                                name="Description"
+                                                                value="{{ user_bill['bill_description'] }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row" id="Frequency">
+                                                    <br>
+                                                    <label for="Frequency" class="col-xs-2 control-label">Frequency</label>
+                                                    <div class="col-xs-10">
+                                                        <select type="text"
+                                                                class="form-control"
+                                                                name="Frequency"
+                                                                value="{{ user_bill['bill_options'] }}">
+                                                            <option value="none" selected disabled hidden>{{ user_bill['bill_options'] }}</option>
+                                                            <option value="Monthly">Monthly</option>
+                                                            <option value="Quarterly">Quarterly</option>
+                                                            <option value="Biannual">Biannual</option>
+                                                            <option value="Annual">Annual</option>
+                                                            <option value="Custom Days">Custom Days</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row" id="Custom_Freq">
+                                                    <br>
+                                                    <label for="Custom_Freq" class="col-xs-2 control-label">Custom Frequency</label>
+                                                    <div class="col-xs-10">
+                                                        <input type="text"
+                                                                class="form-control"
+                                                                name="Custom_Freq"
+                                                                value="{{ user_bill['bill_custom_freq'] }}" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <br>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-success">Submit</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    data-toggle="modal"
+                                    data-target="#delete_bill_2_{{ user_bill['bill_id'] }}">Delete</button>
+                            <div class="modal fade"
+                                    id="delete_bill_2_{{ user_bill['bill_id'] }}"
+                                    role="dialog"
+                                    aria-labelledby="basicModal"
+                                    aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title" id="myModalLabel">Delete a bill</h4>
+                                        </div>
+                                        <form action="{{ url_for('views.delete_bill_2', bill_id=user_bill['bill_id']) }}"
+                                                method="post"
+                                                style="display: inline">
+                                            <div class="modal-body">
+                                                <div class="form-group row">
+                                                    <label class="col-sm-12 col-form-label">
+                                                        Do you want to delete the bill <span style='font-weight:bold;color:red'>{{ user_bill['bill_name'] }}</span>?
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <br>
+                                                <br>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <form action="{{ url_for('views.make_ics', bill_id=user_bill['bill_id']) }}"
+                                    method="POST">
+                                <button class="submit">Remind Me</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+            {% endif %}
+        </main>
+        {% include 'footer.html' %}
+    </body>
+</html>
+

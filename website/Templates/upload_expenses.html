@@ -1,0 +1,105 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesUpEXP.css') }}">
+    <meta charset="UTF-8">
+    <title>Upload Expense · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+{% endblock %}
+<body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "profile" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+</body>
+{% block body %}
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('uploads.upload_csv') }}">Upload CSV</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_expenses') }}" class="active">Upload Individual Expense</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_investment') }}">Upload Investments</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_bills') }}">Upload Bills</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_goals') }}">Upload Goals</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.budget_sharing') }}">Budget Sharing</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.income') }}">Income</a>
+            </li>
+            <li>
+                <a href="{{ url_for('auth.change_password', user_id=current_user.user_id) }}">Change Password</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+        </ul>
+    </div>
+    <header>
+        <h1>Upload Expense</h1>
+    </header>
+    <div class="content">
+        <form action="/upload_expenses" method="POST">
+            {{ expense_form.hidden_tag() }}
+            <label for="amount"></label>
+            {{ wtf.form_field(expense_form.amount, id="amount") }}
+            <br>
+            <label for="category"></label>
+            {{ wtf.form_field(expense_form.category, id="category") }}
+            <br>
+            <label for="description"></label>
+            {{ wtf.form_field(expense_form.description, id="description") }}
+            <br>
+            <label for="Date"></label>
+            {{ wtf.form_field(expense_form.date) }}
+            <br>
+            <!-- Account tyoe dropdown here -->
+            <label for="account-type">Account Type:</label>
+            <select name="account-type" id="account-type">
+                <option value="debit">Debit</option>
+                <option value="credit">Credit</option>
+                <option value="other">Other (Type New)</option>
+            </select>
+            <br>
+            <div id="new-account-section" style="display: none;">
+                <label for="new-account">New Account:</label>
+                <input type="text" name="new-account" id="new-account">
+            </div>
+            <br>
+            <script>
+            var accountTypeDropdown = document.getElementById("account-type");
+            var newAccountSection = document.getElementById("new-account-section");
+        
+            accountTypeDropdown.addEventListener("change", function() {
+                if (accountTypeDropdown.value === "other") {
+                newAccountSection.style.display = "block";
+                } else {
+                newAccountSection.style.display = "none";
+                }
+            });
+            </script>
+            <button type="submit" class="button">Input Expense</button>
+        </form>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p class="bg-info" style="padding: 15px;">
+                    {% for msg in messages %}
+                        {{ msg }}
+                        <br>
+                    {% endfor %}
+                </p>
+            {% endif %}
+        {% endwith %}
+    </div>
+{% endblock body %}

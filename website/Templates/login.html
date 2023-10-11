@@ -1,0 +1,58 @@
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block head %}
+<title>Login · Cassowary Budget App</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+<link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="/Static/css/login.css">
+<div class="container">
+    <div class="row">
+        <div class="col">
+
+            <!--Testing Login-->
+            
+
+            <div class="card">
+                
+                <div class="card-body">
+                    
+                    <form class="box" action="/login" method="POST">
+                        <h1 style="text-align:center">Login</h1>
+                        {{ login_form.hidden_tag() }}
+                    
+                        <label for="email"></label>
+                        {{ wtf.form_field(login_form.email, id="email") }}
+                    
+                        <label for="password"></label>
+                        {{ wtf.form_field(login_form.password, id="password") }}
+                    
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <p class="bg-info" style="padding: 15px;">
+                                    {% for msg in messages %}
+                                        {{ msg }} <br>
+                                    {% endfor %}
+                                </p>
+                            {% endif %}
+                        {% endwith %}
+                    
+                        {{ wtf.form_field(login_form.remember) }}
+                    
+                        <button type="submit" class="btn btn-primary">Login</button>
+                        <p class="small-xl pt-3 text-center">
+                            <span class="text-muted">Not a member?</span>
+                            <a href="signup">Sign up</a>
+                        </p>
+                    
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

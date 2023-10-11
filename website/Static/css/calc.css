@@ -1,0 +1,137 @@
+body{
+  overflow-y: scroll;
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  padding: 0; /* Remove default padding from the list */
+  margin-top: 100px;
+}
+
+.tabs li {
+  flex: 1; /* Distribute available space evenly */
+  list-style-type: none;
+  margin: 0;
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid black; /* Increase border thickness */
+  border-left: none; /* Remove left border */
+  height: 40px; /* Adjust the height of the tabs */
+  line-height: 40px; /* Center the tab text vertically */
+  white-space: nowrap; /* Prevent the text from wrapping to the next line */
+  overflow: hidden; /* Hide any overflowing text */
+  text-overflow: ellipsis; /* Display an ellipsis for truncated text */
+}
+
+.tabs li:first-child {
+  border-left: 2px solid black; /* Add left border to the first tab */
+}
+
+.tabs li.active {
+  background-color: purple;
+  color: white;
+}
+
+.tabs li.active a {
+  color: white;
+}
+
+.tabs li a {
+  text-decoration: none; /* Remove underline */
+  font-weight: bold; /* Set the text to bold */
+  font-size: 20px; /* Adjust the text size as needed */
+}
+
+.tab-container {
+  max-width: 1500px; /* Adjust the maximum width as needed */
+  margin: 0 auto; /* Center the container horizontally */
+  margin-top: 10rem;
+  padding: 0 20px; /* Add padding to create blank space on the left and right sides */
+}
+
+.input {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Adjust the shadow properties as needed */
+  padding: 10px; /* Adjust the padding as needed */
+  background-color: #f0f0f0; /* Adjust the background color as needed */
+
+}
+.input .form-group {
+  flex: 0 0 auto;
+  width: 30%; /* Adjust as needed */
+  margin-bottom: 1px;
+}
+
+.input .form-group label {
+  font-weight: bold;
+  font-size: 24px; /* Adjust as needed */
+}
+
+.input .form-group select {
+  width: 75%; /* Adjust as needed */
+  height: 40px; /* Adjust as needed */
+  font-size: 16px;
+}
+.input .form-group input[type="number"] {
+  width: 75%; /* Adjust as needed */
+  height: 34px; /* Adjust as needed */
+}
+.button-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
+.button-container input[type="submit"],
+.button-container input[type="reset"] {
+  background-color: purple;
+  border: 2px solid purple;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 12px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  width: 150px;
+}
+
+.button-container input[type="submit"]:hover,
+.button-container input[type="reset"]:hover {
+  background-color: white;
+  color: purple;
+}
+
+
+.budget-table {
+  font-family: Lato, sans-serif;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+  .budget-table th {
+    background-color: purple;
+    padding: 0.75rem 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    font-size: 0.7rem;
+    font-weight: 900;
+  }
+
+  .budget-table td {
+    padding: 1rem 2rem;
+  }
+
+
+  tr:nth-child(even) {
+    background-color: #fbf3fe;
+  }

@@ -1,0 +1,126 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ · Cassowary Budget App</title>
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesFAQ.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'FAQ' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <head>
+    <div class="sidebar">
+      <ul>
+          <li>
+              <a href="{{ url_for('views.FAQDashboard') }}">Dashboard FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}">Budget Creation FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Budget Summary FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}">Expenses FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Investment') }}">Investments FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}">Calculators FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}">Goals FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Profile') }}">Profiles and Uploads FAQs</a>
+          </li>
+      </ul>
+    </div>
+    <header>
+      <h1>FAQs & Documentation</h1>
+    </header>
+    </head>
+    <body>
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq">
+                  <input type="checkbox" id="faq1">
+                  <label for="faq1" class="faq-question">How do I add data to my account?</label>
+                  <div class="faq-answer">
+                    All the data uploads are done through the profile page, they can all be accessed on the sidebar on that page.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq2">
+                  <label for="faq2" class="faq-question">Can I import my financial data from other sources into The Budget Manager?</label>
+                  <div class="faq-answer">
+                    Yes, The Budget Manager allows for importing of financial data from other sources. It supports file types such as .csv and .xlsx. This makes it easy to integrate your existing financial information into the platform.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq3">
+                  <label for="faq3" class="faq-question">Is my personal and financial information secure in The Budget Manager?</label>
+                  <div class="faq-answer">
+                    Your personal and financial security is a top priority in The Budget Manager. The platform uses encryption technologies to safeguard your sensitive information, which is stored off-site to further enhance security. 
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq4">
+                  <label for="faq4" class="faq-question">How can I add income and expenses in The Budget Manager?</label>
+                  <div class="faq-answer">
+                    Adding income or expenses in The Budget Manager is straightforward. To add an expense, go to "Profile", then on the left panel, select "Upload Individual Expense". For adding income, follow the same process but instead select "Income".
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq5">
+                  <label for="faq5" class="faq-question">Can I create customized budgets in The Budget Manager?</label>
+                  <div class="faq-answer">
+                    Yes, The Budget Manager provides an option for creating customized budgets. To create a new budget, select "Budget Creator" from the top panel, then click on "add new". Here, you can specify your budget details according to your needs.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq6">
+                  <label for="faq6" class="faq-question">Can I set financial goals in The Budget Manager?</label>
+                  <div class="faq-answer">
+                    Absolutely. To set financial goals, navigate to the top panel and select "Goals", then click on "add new". You can then specify your goal details, such as the amount and deadline.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq8">
+                  <label for="faq8" class="faq-question">Is The Budget Manager available for multiple devices and platforms?</label>
+                  <div class="faq-answer">
+                    At present, The Budget Manager operates as a web application. However, plans are underway to launch it on various platforms such as Windows, Mac, Android, and iOS, making it accessible across multiple devices.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq9">
+                  <label for="faq9" class="faq-question">How can I get technical support or contact the customer service team for The Budget Manager?</label>
+                  <div class="faq-answer">
+                    If you need technical support or wish to contact the customer service team, you can reach out via email at support@TheBudgetManager.com or call the customer service hotline at 6789998212.
+                  </div>
+                </div>
+              </div>
+        </div>
+    </body>
+</html>

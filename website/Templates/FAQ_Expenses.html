@@ -1,0 +1,93 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ · Cassowary Budget App</title>
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesFAQ.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'FAQ' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <head>
+    <div class="sidebar">
+      <ul>
+          <li>
+              <a href="{{ url_for('views.FAQDashboard') }}">Dashboard FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}">Budget Creation FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Budget Summary FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}" class="active">Expenses FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Investment') }}">Investments FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}">Calculators FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}">Goals FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Profile') }}">Profiles and Uploads FAQs</a>
+          </li>
+      </ul>
+    </div>
+    <header>
+      <h1>Expenses FAQs & Documentation</h1>
+    </header>
+    </head>
+    <body>
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq">
+                    <input type="checkbox" id="faq1">
+                    <label for="faq1" class="faq-question">How do I add expenses in The Budget Manager?</label>
+                    <div class="faq-answer">
+                        Expenses can be uploaded in bulk using CSVs provided by your bank or added individually. To add expenses individually, click on the "Add Expense" button on the Pofile page. 
+                        You will be prompted to enter the expense name, amount, and date. You can also add a description and category for the expense. Once you have entered all the information, click "Add Expense" to add the expense to your budget.
+                        Bulk expenses can be added by following the tutorial on the Upload CSV page in the profile section.
+                    </div>
+                </div>
+                <hr>
+        
+                <div class="faq">
+                    <input type="checkbox" id="faq2">
+                    <label for="faq2" class="faq-question">Can I categorize my expenses in The Budget Manager?</label>
+                    <div class="faq-answer">
+                        Yes, you can. When you're creating a new expense entry in The Budget Manager, you have the option to categorize it. This helps you keep track of your spending in different areas and can provide valuable insights into your spending habits. If necessary, you can also edit the category of an expense later on.
+                    </div>
+                </div>
+                <hr>
+        
+                <div class="faq">
+                    <input type="checkbox" id="faq3">
+                    <label for="faq3" class="faq-question">Can I set up recurring expenses in The Budget Manager?</label>
+                    <div class="faq-answer">
+                        Recurring expenses can be set up as Bills, which are explained in the Bills FAQs section.
+                    </div>
+                </div>
+              </div>
+              <hr>
+        
+                <div class="faq">
+                    <input type="checkbox" id="faq4">
+                    <label for="faq4" class="faq-question">Does The Budget Manager provide insights or reports on my spending patterns or trends?</label>
+                    <div class="faq-answer">
+                        Yes, it does. The Budget Manager's dashboard and budget summary section both include visual representations of your spending patterns and trends. These are based on the data you've entered into the system and can provide you with valuable insights to help you understand your spending habits and make better financial decisions.
+                    </div>
+                </div>
+              </div>
+        </div>  
+    </body>
+</html>

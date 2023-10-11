@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Stocks · Cassowary Budget App</title>
+    <link rel="stylesheet" type="text/css" href="/Static/css/stylesINVEST.css">
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+  </head>
+  <body onload="initializeForm()" style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = 'investment_tracking' %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+    <div class="content">
+      <h1 class="investment-header">Investment Tracking</h1>
+      <!-- Script to get individual Stock Price Ends -->
+      <!-- TradingView Widget BEGIN -->
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+
+  {
+  "symbols": [
+    {
+      "proName": "FOREXCOM:SPXUSD",
+      "title": "S&P 500"
+    },
+    {
+      "proName": "FOREXCOM:NSXUSD",
+      "title": "US 100"
+    },
+    {
+      "description": "Microsoft",
+      "proName": "NASDAQ:MSFT"
+    },
+    {
+      "proName": "BITSTAMP:BTCUSD",
+      "title": "Bitcoin"
+    },
+    {
+      "proName": "BITSTAMP:ETHUSD",
+      "title": "Ethereum"
+    },
+    {
+      "description": "Tesla",
+      "proName": "NASDAQ:TSLA"
+
+    },
+    {
+      "description": "Amazon",
+      "proName": "NASDAQ:AMZN"
+
+    }
+
+  ],
+  "showSymbolLogo": true,
+  "colorTheme": "light",
+  "isTransparent": true,
+  "displayMode": "regular",
+  "locale": "en"
+}
+        </script>
+      </div>
+      <!-- TradingView Widget END -->
+
+      <div class="investment-container">
+        <br>
+        <div class="container" style="display: flex; justify-content: center;">
+          <h4 class="underline-heading">Live Stock Market Data</h4>
+          <a href="{{ url_for('views.cryptocurrency') }}">
+            <button class="button">View Cryptocurrency Market Data</button>
+          </a>
+          <button onclick="openInvestmentOptions()" class="buttonin">Make Investment</button>
+        </div>
+        
+        <!-- Investment Options Form -->
+        <div id="investmentOptionsForm" class="popup-form" style="display: none;">
+          <h2>Investment Options</h2>
+          <p>Select the investment type:</p>
+          <button onclick="openInvestForm1()">Invest in Stocks</button>
+          <button onclick="openInvestForm2()">Invest in Crypto</button>
+          <button onclick="openCustomInvestForm()">Custom Investment</button>
+          <button type="button" onclick="closeForm2()">Cancel</button>
+        </div>
+       
+        <!--#######################################################-->
+
+       <!-- Invest Form 1 (Stocks) -->
+<div id="investForm1" class="popup-form" style="display: none;">
+  <!-- Your existing form for stocks investment -->
+  <h2>Buy Stock</h2>
+  <form id="investmentForm" action="/investment_tracking" method="POST">
+    <label for="amount" style="font-weight: bold;">Amount (minimum $50):</label>
+    <input type="number" min="50" id="amount" name="amount" oninput="updateShareSymbol()" required>
+    <label for="share" style="font-weight: bold;">Investment Type:</label>
+    <select id="investmentType" name="investmentType" onchange="updateForm()" required>
+      <option value="stocks" selected>Stocks</option>
+    </select>
+    <label for="share" style="font-weight: bold;">Select Share/Coin:</label>
+    <select id="share" name="share" onchange="updateShareSymbol()" required></select>
+    <label for="shareSymbol" style="font-weight: bold;">Symbol:</label>
+    <input type="text" id="shareSymbol" name="shareSymbol" style="margin-bottom: 7px;" readonly>
+    <label for="sharePrice" style="font-weight: bold;">Price per Unit (USD):</label>
+    <input type="text" id="sharePrice" name="sharePrice" style="margin-bottom: 7px;" readonly class="stock-price">
+    <label for="quantity" style="font-weight: bold;">Quantity:</label>
+    <input type="text" id="quantity" name="quantity" style="margin-bottom: 7px;" readonly>
+    <label for="orderDate" style="font-weight: bold;">Purchase Date:</label>
+    <input type="date" id="orderDate" name="orderDate" required>
+    <input type="submit" value="Submit">
+    <button type="button" onclick="closeForm2()">Close</button>
+   
+  </form>
+</div>
+        
+        <!-- Invest Form 2 (Crypto) -->
+        <div id="investForm2" class="popup-form" style="display: none;">
+          <!-- Your existing form for stocks investment -->
+          <h2>Buy Crypto</h2>
+          <form id="investmentForm2" action="/cryptocurrency" method="POST">
+            <label for="amount2" style="font-weight: bold;">Amount (minimum $50):</label>
+            <input type="number" min="50" id="amount2" name="amount2" oninput="updateShareSymbol2()" required>
+            <label for="investmentType2" style="font-weight: bold;">Investment Type:</label>
+            <select id="investmentType2" name="investmentType2" onchange="updateForm2()" required>
+              <option value="crypto" selected>Crypto</option>
+            </select>
+            <label for="share2" style="font-weight: bold;">Select Share/Coin:</label>
+            <select id="share2" name="share2" onchange="updateShareSymbol2()" required></select>
+            <label for="shareSymbol2" style="font-weight: bold;">Symbol:</label>
+            <input type="text" id="shareSymbol2" name="shareSymbol2" style="margin-bottom: 7px;" readonly>
+            <label for="sharePrice2" style="font-weight: bold;">Price per Unit (USD):</label>
+            <input type="text" id="sharePrice2" name="sharePrice2" style="margin-bottom: 7px;" readonly class="stock-price">
+            <label for="quantity2" style="font-weight: bold;" >Quantity:</label>
+            <input type="text" id="quantity2" name="quantity2" style="margin-bottom: 7px;" readonly>
+            <label for="orderDate2" style="font-weight: bold;">Purchase Date:</label>
+            <input type="date" id="orderDate2" name="orderDate2" required>
+            <input type="submit" value="Submit">
+            <button type="button" onclick="closeForm2()">Close</button>
+            <label class="small-label">Powered by CoinGecko</label>
+          </form>
+        </div>
+        
+        <!-- Custom Investment Form -->
+        <div id="customInvestForm" class="popup-form" style="display: none;">
+          <h2>Custom Investment Form</h2>
+          <form id="investmentForm3" action="/customInvest" method="POST">
+            <label for="amount3" style="font-weight: bold;">Amount (minimum $50):</label>
+            <input type="number" min="50" id="amount3" name="amount3" oninput="updateShareSymbol()" required>
+            <label for="share3" style="font-weight: bold;">Investment Type:</label>
+            <select id="investmentType3" name="investmentType3" onchange="updateForm()" required>
+              <option value="custom" selected>Custom Investment</option>
+            </select>
+            <div style="margin-bottom: 10px;">
+              <label for="desc" style="font-weight: bold; display: block; margin-bottom: 5px;">Investment Description</label>
+              <textarea id="desc" name="desc" style="height: 70px; width: 200px; border: 1px solid #ccc; padding: 5px; border-radius: 4px;"></textarea>
+            </div>
+                                    
+            <label for="orderDate3" style="font-weight: bold;">Purchase Date:</label>
+            <input type="date" id="orderDate3" name="orderDate3" required>
+            <input type="submit" value="Submit">
+            <button type="button" onclick="closeForm2()">Close</button>       
+          </form>
+        </div>
+        
+        <script>
+          function openInvestmentOptions() {
+            document.getElementById("investmentOptionsForm").style.display = "block";
+          }
+        
+          function openInvestForm1() {
+            document.getElementById("investForm1").style.display = "block";
+            document.getElementById("investmentOptionsForm").style.display = "none";
+          }
+        
+          function openInvestForm2() {
+            document.getElementById("investForm2").style.display = "block";
+            document.getElementById("investmentOptionsForm").style.display = "none";
+          }
+        
+          function openCustomInvestForm() {
+            document.getElementById("customInvestForm").style.display = "block";
+            document.getElementById("investmentOptionsForm").style.display = "none";
+          }
+        
+          function closeForm2() {
+            document.getElementById("investmentOptionsForm").style.display = "none";
+            document.getElementById("investForm1").style.display = "none";
+            document.getElementById("investForm2").style.display = "none";
+            document.getElementById("customInvestForm").style.display = "none";
+          }
+        </script>
+         
+        <!-- Script to get individual Stock Price Starts -->
+
+        <script>
+
+        function initializeForm() {
+              updateForm(); // Call updateForm() to handle "Invest in Stocks" option
+              updateForm2();
+              updateShareSymbol(); // Call updateShareSymbol() for share selection
+              updateShareSymbol2();
+            }
+          function updateShareSymbol() {
+            var shareDropdown = document.getElementById("share");
+            var shareSymbolInput = document.getElementById("shareSymbol");
+            var sharePriceInput = document.getElementById("sharePrice");
+        
+            var selectedShare = shareDropdown.value;
+            var shareSymbol;
+        
+            if (selectedShare === "Bitcoin") {
+      shareSymbol = "bitcoin";
+    } else if (selectedShare === "Ethereum") {
+      shareSymbol = "ethereum";
+    } else if (selectedShare === "Litecoin") {
+      shareSymbol = "litecoin";
+    } else if (selectedShare === "Ripple") {
+      shareSymbol = "ripple";
+    } else if (selectedShare === "Cardano") {
+      shareSymbol = "cardano";
+    } else if (selectedShare === "Dogecoin") {
+      shareSymbol = "dogecoin";
+    } else if (selectedShare === "Solana") {
+      shareSymbol = "solana";
+    } else if (selectedShare === "Tesla") {
+      shareSymbol = "TSLA";
+    } else if (selectedShare === "Apple") {
+      shareSymbol = "AAPL";
+    } else if (selectedShare === "Microsoft") {
+      shareSymbol = "MSFT";
+    } else if (selectedShare === "Amazon") {
+      shareSymbol = "AMZN";
+    } else if (selectedShare === "NVIDIA") {
+      shareSymbol = "NVDA";
+    } else if (selectedShare === "VISA") {
+      shareSymbol = "V";
+    } else if (selectedShare === "Meta Platforms") {
+      shareSymbol = "META";
+    } else {
+      shareSymbol = "";
+    }
+        
+            shareSymbolInput.value = shareSymbol;
+        
+            var investmentType = document.getElementById("investmentType").value;
+        
+            if (investmentType === "stocks") {
+              // Fetch the stock price from Finnhub API
+              var apiKey = "chno3h9r01qrto3v6kt0chno3h9r01qrto3v6ktg";
+              var apiUrl = "https://finnhub.io/api/v1/quote?symbol=" + shareSymbol + "&token=" + apiKey;
+        
+              fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                  var price = parseFloat(data.c).toFixed(2);
+                  sharePriceInput.value = price;
+                  // Update the quantity
+                  const amount = parseFloat(document.getElementById("amount").value);
+                  const quantityInput = document.getElementById("quantity");
+                  if (!isNaN(amount) && !isNaN(price)) {
+                    const quantity = amount / price;
+                    quantityInput.value = quantity.toFixed(2); // Set the quantity with 2 decimal places
+                  } else {
+                    quantityInput.value = ""; // Clear the quantity input if the inputs are not valid
+                  }
+                })
+                .catch(error => {
+                  console.log("Failed to fetch stock price:", error);
+                  sharePriceInput.value = "";
+                });
+            } else if (investmentType === "crypto") {
+              // Fetch the cryptocurrency prices from CoinGecko API
+              var apiUrl = "https://api.coingecko.com/api/v3/simple/price?ids=" + shareSymbol + "&vs_currencies=usd";
+        
+              fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                  var price = parseFloat(data[shareSymbol].usd).toFixed(2);
+                  sharePriceInput.value = price;
+                  // Update the quantity
+                  const amount = parseFloat(document.getElementById("amount").value);
+                  const quantityInput = document.getElementById("quantity");
+                  if (!isNaN(amount) && !isNaN(price)) {
+                    const quantity = amount / price;
+                    quantityInput.value = quantity.toFixed(8); // Set the quantity with 8 decimal places as per crypto standards
+                  } else {
+                    quantityInput.value = ""; // Clear the quantity input if the inputs are not valid
+                  }
+                })
+                .catch(error => {
+                  console.log("Failed to fetch cryptocurrency price:", error);
+                  sharePriceInput.value = "";
+                });
+            } else {
+              sharePriceInput.value = "";
+            }
+          }
+
+ // updateShareSymbol2 Starting from here 
+          function updateShareSymbol2() {
+            var shareDropdown2 = document.getElementById("share2");
+            var shareSymbolInput2 = document.getElementById("shareSymbol2");
+            var sharePriceInput2 = document.getElementById("sharePrice2");
+        
+            var selectedShare2 = shareDropdown2.value;
+            var shareSymbol2;
+        
+            if (selectedShare2 === "Bitcoin") {
+      shareSymbol2 = "bitcoin";
+    } else if (selectedShare2 === "Ethereum") {
+      shareSymbol2 = "ethereum";
+    } else if (selectedShare2 === "Litecoin") {
+      shareSymbol2 = "litecoin";
+    } else if (selectedShare2 === "Ripple") {
+      shareSymbol2 = "ripple";
+    } else if (selectedShare2 === "Cardano") {
+      shareSymbol2 = "cardano";
+    } else if (selectedShare2 === "Dogecoin") {
+      shareSymbol2 = "dogecoin";
+    } else if (selectedShare2 === "Solana") {
+      shareSymbol2 = "solana";
+    } else {
+      shareSymbol2 = "";
+    }
+        
+            shareSymbolInput2.value = shareSymbol2;
+        
+            var investmentType2 = document.getElementById("investmentType2").value;
+        
+            if (investmentType2 === "stocks") {
+              // Fetch the stock price from Finnhub API
+              var apiKey = "chno3h9r01qrto3v6kt0chno3h9r01qrto3v6ktg";
+              var apiUrl = "https://finnhub.io/api/v1/quote?symbol=" + shareSymbol2 + "&token=" + apiKey;
+        
+              fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                  var price2 = parseFloat(data.c).toFixed(2);
+                  sharePriceInput2.value = price2;
+                  // Update the quantity
+                  const amount2 = parseFloat(document.getElementById("amount2").value);
+                  const quantityInput2 = document.getElementById("quantity2");
+                  if (!isNaN(amount2) && !isNaN(price2)) {
+                    const quantity2 = amount2 / price2;
+                    quantityInput2.value = quantity2.toFixed(2); // Set the quantity with 2 decimal places
+                  } else {
+                    quantityInput2.value = ""; // Clear the quantity input if the inputs are not valid
+                  }
+                })
+                .catch(error => {
+                  console.log("Failed to fetch stock price:", error);
+                  sharePriceInput2.value = "";
+                });
+            } else if (investmentType2 === "crypto") {
+              // Fetch the cryptocurrency prices from CoinGecko API
+              var apiUrl = "https://api.coingecko.com/api/v3/simple/price?ids=" + shareSymbol2 + "&vs_currencies=usd";
+        
+              fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                  var price2 = parseFloat(data[shareSymbol2].usd).toFixed(2);
+                  sharePriceInput2.value = price2;
+                  // Update the quantity
+                  const amount2 = parseFloat(document.getElementById("amount2").value);
+                  const quantityInput2 = document.getElementById("quantity2");
+                  if (!isNaN(amount2) && !isNaN(price2)) {
+                    const quantity2 = amount2 / price2;
+                    quantityInput2.value = quantity2.toFixed(8); // Set the quantity with 8 decimal places as per crypto standards
+                  } else {
+                    quantityInput2.value = ""; // Clear the quantity input if the inputs are not valid
+                  }
+                })
+                .catch(error => {
+                  console.log("Failed to fetch cryptocurrency price:", error);
+                  sharePriceInput2.value = "";
+                });
+            } else {
+              sharePriceInput2.value = "";
+            }
+          }
+
+
+
+
+
+
+        
+          function openForm() {
+            document.getElementById("popupForm").style.display = "block";
+          }
+        
+          function closeForm() {
+            document.getElementById("popupForm").style.display = "none";
+          }
+        
+          function updateForm() {
+            var investmentType = document.getElementById("investmentType").value;
+            var shareDropdown = document.getElementById("share");
+        
+            if (investmentType === "stocks") {
+              shareDropdown.innerHTML = `
+                <option value="Tesla">Tesla</option>
+                <option value="Apple">Apple</option>
+                <option value="Microsoft">Microsoft</option>
+                <option value="Amazon">Amazon</option>
+                <option value="NVIDIA">NVIDIA</option>
+                <option value="VISA">VISA</option>
+                <option value="Meta Platforms">Meta Platforms</option>
+              `;
+            } else if (investmentType === "crypto") {
+              shareDropdown.innerHTML = `
+                <option value="Bitcoin">Bitcoin</option>
+                <option value="Ethereum">Ethereum</option>
+                <option value="Litecoin">Litecoin</option>
+                <option value="Ripple">Ripple</option>
+                <option value="Cardano">Cardano</option>
+                <option value="Dogecoin">Dogecoin</option>
+                <option value="Solana">Solana</option>
+              `;
+            } else {
+              shareDropdown.innerHTML = "";
+            }
+          }
+
+          function updateForm2() {
+            var investmentType2 = document.getElementById("investmentType2").value;
+            var shareDropdown2 = document.getElementById("share2");
+        
+            if (investmentType2 === "stocks") {
+              shareDropdown.innerHTML = `
+                <option value="Tesla">Tesla</option>
+                <option value="Apple">Apple</option>
+                <option value="Microsoft">Microsoft</option>
+                <option value="Amazon">Amazon</option>
+                <option value="NVIDIA">NVIDIA</option>
+                <option value="VISA">VISA</option>
+                <option value="Meta Platforms">Meta Platforms</option>
+              `;
+            } else if (investmentType2 === "crypto") {
+              shareDropdown2.innerHTML = `
+                <option value="Bitcoin">Bitcoin</option>
+                <option value="Ethereum">Ethereum</option>
+                <option value="Litecoin">Litecoin</option>
+                <option value="Ripple">Ripple</option>
+                <option value="Cardano">Cardano</option>
+                <option value="Dogecoin">Dogecoin</option>
+                <option value="Solana">Solana</option>
+              `;
+            } else {
+              shareDropdown.innerHTML = "";
+            }
+          }
+        
+                 
+        </script>
+
+        <!-- Getting Current Date Function for all three Invest Types -->
+        <script>
+        
+        var currentDate = new Date();
+          var formattedDate = currentDate.toISOString().split("T")[0];
+          document.getElementById("orderDate").value = formattedDate;
+          document.getElementById("orderDate2").value = formattedDate;
+          document.getElementById("orderDate3").value = formattedDate;
+
+        </script>
+
+
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <div style="display: flex; justify-content: center;">
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js" async>
+  {
+  "colorTheme": "light",
+  "dateRange": "1D",
+  "exchange": "NASDAQ",
+  "showChart": true,
+  "locale": "en",
+  "largeChartUrl": "",
+  "isTransparent": false,
+  "showSymbolLogo": true,
+  "showFloatingTooltip": false,
+  "width": "700",
+  "height": "600",
+  "plotLineColorGrowing": "rgba(41, 98, 255, 1)",
+  "plotLineColorFalling": "rgba(41, 98, 255, 1)",
+  "gridLineColor": "rgba(240, 243, 250, 0)",
+  "scaleFontColor": "rgba(106, 109, 120, 1)",
+  "belowLineFillColorGrowing": "rgba(41, 98, 255, 0.12)",
+  "belowLineFillColorFalling": "rgba(41, 98, 255, 0.12)",
+  "belowLineFillColorGrowingBottom": "rgba(41, 98, 255, 0)",
+  "belowLineFillColorFallingBottom": "rgba(41, 98, 255, 0)",
+  "symbolActiveColor": "rgba(41, 98, 255, 0.12)"
+}
+            </script>
+          </div>
+        </div>
+        <!-- TradingView Widget END -->
+      </div>
+    </div>
+    {% include 'footer.html' %}
+  </body>
+</html>
+
+

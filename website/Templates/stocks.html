@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stocks</title>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <th>Stock ID</th>
+        <th>Ticker Name</th>
+        <th>Ticker Symbol</th>
+        <th>Total Price</th>
+        <th>Order Date</th>
+        <th>Investment Type</th>
+      </tr>
+      {% for stock in stocks %}
+      <tr>
+        <td>{{ stock.stock_and_crypto_id }}</td>
+        <td>{{ stock.ticker_name }}</td>
+        <td>{{ stock.ticker_symbol }}</td>
+        <td>{{ stock.total_price }}</td>
+        <td>{{ stock.order_date }}</td>
+        <td>{{ stock.investment_type }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>

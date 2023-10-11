@@ -1,0 +1,255 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/stylesUpEXP.css') }}">
+    <meta charset="UTF-8">
+    <title>Income · Cassowary Budget App</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+          rel="stylesheet">
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="/Static/css/stylesEXP.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+            integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+            integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+            crossorigin="anonymous"></script>
+    <link rel="icon"
+          href="{{ url_for('static', filename='images/favicon.ico') }}"
+          type="image/x-icon">
+{% endblock %}
+<body style="font-family: 'Raleway', sans-serif;">
+    {% set current_page = "profile" %}  <!-- Set the current page variable -->
+    {% include 'navbar.html' %}
+</body>
+{% block body %}
+    <div class="sidebar">
+        <ul>
+            <li>
+                <a href="{{ url_for('uploads.upload_csv') }}">Upload CSV</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_expenses') }}">Upload Individual Expense</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_investment') }}">Upload Investments</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_bills') }}">Upload Bills</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.upload_goals') }}">Upload Goals</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.budget_sharing') }}">Budget Sharing</a>
+            </li>
+            <li>
+                <a href="{{ url_for('uploads.income') }}" class="active">Income</a>
+            </li>
+            <li>
+                <a href="{{ url_for('auth.change_password', user_id=current_user.user_id) }}">Change Password</a>
+            </li>
+            <li>
+                <a href="{{ url_for('views.FAQ') }}">FAQs</a>
+            </li>
+        </ul>
+    </div>
+    <html>
+        <header>
+            <h1>Income</h1>
+        </header>
+        <div class="content">
+            <form action="/income" method="POST">
+                {{ income_form.hidden_tag() }}
+                <label for="amount"></label>
+                {{ wtf.form_field(income_form.amount, id="amount") }}
+                <br>
+                <label for="description"></label>
+                {{ wtf.form_field(income_form.description, id="description") }}
+                <br>
+                <label for="Date"></label>
+                {{ wtf.form_field(income_form.date) }}
+                <br>
+                <!-- Account tyoe dropdown here -->
+                <label for="account-type">Account Type:</label>
+                <select name="account-type" id="account-type">
+                    <option value="debit">Debit</option>
+                    <option value="credit">Credit</option>
+                    <option value="other">Other (Type New)</option>
+                </select>
+                <br>
+                <div id="new-account-section" style="display: none;">
+                    <label for="new-account">New Account:</label>
+                    <input type="text" name="new-account" id="new-account">
+                </div>
+                <br>
+                <script>
+            var accountTypeDropdown = document.getElementById("account-type");
+            var newAccountSection = document.getElementById("new-account-section");
+        
+            accountTypeDropdown.addEventListener("change", function() {
+                if (accountTypeDropdown.value === "other") {
+                newAccountSection.style.display = "block";
+                } else {
+                newAccountSection.style.display = "none";
+                }
+            });
+                </script>
+                <button type="submit" class="button">Input Income</button>
+            </form>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p class="bg-info" style="padding: 15px;">
+                        {% for msg in messages %}
+                            {{ msg }}
+                            <br>
+                        {% endfor %}
+                    </p>
+                {% endif %}
+            {% endwith %}
+        </div>
+        <!-- Income table here -->
+        {% if user_income %}
+            <div>
+                <h1 style="text-align:center">Your Income History:</h1>
+                <table class="income_table"
+                       style="width: 1000px;
+                              margin-left: auto;
+                              margin-right: auto">
+                    <tr>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Date</th>
+                        <th>Account Type</th>
+                        <th>Actions</th>
+                    </tr>
+                    {% for income in user_income %}
+                        <tr>
+                            <td>{{ income.income_amount }}</td>
+                            <td>{{ income.income_description }}</td>
+                            <td>{{ income.income_date }}</td>
+                            <td>{{ income.account_type }}</td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-success"
+                                        data-toggle="modal"
+                                        data-target="#update_income_{{ income['income_id'] }}">Update</button>
+                                <div class="modal fade"
+                                     id="update_income_{{ income['income_id'] }}"
+                                     tabindex="-1"
+                                     role="dialog"
+                                     aria-labelledby="basicModal"
+                                     aria-hidden="true"
+                                     style="z-index: 9999">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="myModalLabel">Update an income</h4>
+                                            </div>
+                                            <form action="{{ url_for('views.update_income', income_id=income['income_id']) }}"
+                                                  method="post">
+                                                <div class="modal-body">
+                                                    <div class="form-group row">
+                                                        <label for="Date" class="col-xs-2 control-label">Date</label>
+                                                        <div class="col-xs-10">
+                                                            <input type="date"
+                                                                   class="form-control"
+                                                                   name="Date"
+                                                                   value="{{ income['income_date'] }}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <br>
+                                                        <label for="Description" class="col-xs-2 control-label">Description</label>
+                                                        <div class="col-xs-10">
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="Description"
+                                                                   value="{{ income['income_description'] }}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <br>
+                                                        <label for="Amount" class="col-xs-2 control-label">Amount</label>
+                                                        <div class="col-xs-10">
+                                                            <!-- input type="number" has forced step control and I can't get around it so I've made it text.
+                                                                Backend code will validate whether it's a number.-->
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="Amount"
+                                                                   value="{{ income['income_amount'] }}" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <br>
+                                                        <label for="Account" class="col-xs-2 control-label">Account</label>
+                                                        <div class="col-xs-10">
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="Account"
+                                                                   value="{{ income['account_type'] }}" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <br>
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-success">Submit</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button"
+                                        class="btn btn-danger"
+                                        data-toggle="modal"
+                                        data-target="#delete_income_{{ income['income_id'] }}">Delete</button>
+                                <div class="modal fade"
+                                     id="delete_income_{{ income['income_id'] }}"
+                                     role="dialog"
+                                     aria-labelledby="basicModal"
+                                     aria-hidden="true"
+                                     style="z-index: 9999">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="myModalLabel">Delete an income</h4>
+                                            </div>
+                                            <form action="{{ url_for('views.delete_income', income_id=income['income_id']) }}"
+                                                  method="post"
+                                                  style="display: inline">
+                                                <div class="modal-body">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-12 col-form-label">
+                                                            Do you want to delete this income <span style='font-weight:bold;color:red'>{{ income['income_description'] }}</span>?
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <br>
+                                                    <br>
+                                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <br>
+                    <br>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</html>
+{% endblock body %}

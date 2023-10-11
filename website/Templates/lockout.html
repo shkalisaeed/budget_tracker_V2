@@ -1,0 +1,51 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% block head %}
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/navbar.css') }}">
+    <script type="text/javascript">
+            window.addEventListener('DOMContentLoaded', function() {
+                countdownTimer({{remaining}}); 
+            });
+    
+            function countdownTimer(totalSeconds) {
+                var timerElement = document.getElementById('countdown');
+                var loginElement = document.getElementById('login');
+    
+                var interval = setInterval(function() {
+                    var minutes = Math.floor(totalSeconds / 60);
+                    var seconds = totalSeconds % 60;
+    
+                    timerElement.innerHTML = 'Too many failed attempts. You are locked out for ' + minutes + 'm ' + seconds + 's';
+                    totalSeconds--;
+    
+                    if (totalSeconds < 0) {
+                        clearInterval(interval);
+                        timerElement.innerHTML = 'You may try logging in again.';
+                        loginElement.style.display = "block";
+                    }
+                }, 1000); 
+            }
+    </script>
+    <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+{% endblock %}
+{% block body %}
+    <body onload="updateCountdown()">
+        <link rel="stylesheet" href="/Static/css/login.css">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <!--Testing Login-->
+                    <div class="card">
+                        <div class="box">
+                            <div class="card-body"></div>
+                            <div id="countdown"></div>
+                            <a id="login" href={{ url_for('auth.login') }} style="display: none;">Back to Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+{% endblock %}

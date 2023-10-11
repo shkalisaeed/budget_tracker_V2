@@ -1,0 +1,91 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FAQ · Cassowary Budget App</title>
+  <link rel="stylesheet" type="text/css" href="/Static/css/stylesFAQ.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito+Sans&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{url_for('static', filename='images/favicon.ico')}}" type="image/x-icon">
+</head>
+<body style="font-family: 'Raleway', sans-serif;">
+  {% set current_page = 'FAQ' %}  <!-- Set the current page variable -->
+
+  {% include 'navbar.html' %}
+  <head>
+    <div class="sidebar">
+      <ul>
+          <li>
+              <a href="{{ url_for('views.FAQDashboard') }}">Dashboard FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Creator') }}" class="active">Budget Creation FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Budget_Summary') }}">Budget Summary FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Expenses') }}">Expenses FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Investment') }}">Investments FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Calc') }}">Calculators FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Bills') }}">Bills FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Goals') }}">Goals FAQs</a>
+          </li>
+          <li>
+              <a href="{{ url_for('views.FAQ_Profile') }}">Profiles and Uploads FAQs</a>
+          </li>
+      </ul>
+    </div>
+    <header>
+      <h1>Budget Creation FAQs & Documentation</h1>
+    </header>
+    </head>
+    <body>
+        <div class="container">
+            <div class="faq-container">
+                <div class="faq">
+                  <input type="checkbox" id="faq1">
+                  <label for="faq1" class="faq-question">How do I create a budget in The Budget Manager?</label>
+                  <div class="faq-answer">
+                    To create a budget in The Budget Manager, you need to select "Budget Creator" from the top panel of the interface. After clicking on this, you'll be presented with an "add new" option. Click on this and proceed to fill in the details of your new budget, including the budget's name, amount, and duration. Once you have input all the necessary information, you can save the budget and it will be added to your account.
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq2">
+                  <label for="faq2" class="faq-question">Can I customize budget categories and subcategories in The Budget Manager?</label>
+                  <div class="faq-answer">
+                    Yes, The Budget Manager offers customizable budget categories and subcategories. When creating a new budget, you have the option to define what specific categories and subcategories it pertains to. This allows you to allocate portions of your budget to different needs and wants, which can help in better managing your finances. 
+                  </div>
+                </div>
+                <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq3">
+                  <label for="faq3" class="faq-question">Can I set different budget amounts for different time periods (weekly, monthly, etc.)?</label>
+                  <div class="faq-answer">
+                    Absolutely. The Budget Manager is flexible in terms of how you can set up your budget. When creating a new budget, you can specify the duration it should apply to, such as weekly or monthly. You also have the option to adjust these settings later if your circumstances change.
+                  </div>
+                </div>
+              </div>
+              <hr>
+
+                <div class="faq">
+                  <input type="checkbox" id="faq4">
+                  <label for="faq4" class="faq-question">Does The Budget Manager allow me to allocate funds for specific savings goals within my budget?</label>
+                  <div class="faq-answer">
+                    Yes, you can certainly allocate funds for specific savings goals within your budget using The Budget Manager. The "Goals" section in the top panel lets you set up financial targets and designate a portion of your budget towards achieving them. This feature makes it easier to stay on track with your savings goals while also managing your regular expenses.
+                  </div>
+                </div>
+              </div>
+        </div> 
+    </body>
+</html>

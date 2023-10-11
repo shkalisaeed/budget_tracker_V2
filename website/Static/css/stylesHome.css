@@ -1,0 +1,352 @@
+/* CSS styles for the layout */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-y: scroll;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); */
+  grid-template-rows: repeat(auto-fit, minmax(0, 1fr));
+  /* grid-template-rows: repeat(2, 1fr); */
+  gap: 0px;
+  padding: 10px;
+  margin-top: 100px; /* Adjust the margin as needed */
+}
+
+/* for mobile */
+@media only screen and (max-width: 850px) {
+  .container {
+    display: grid;
+    /* grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr); */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 0px;
+    padding: 10px;
+    margin-top: 100px; /* Adjust the margin as needed */
+    width: 100%;
+  }
+}
+
+.section {
+  background-color: #f1f1f1;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid #ccc;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.section1 {
+  grid-column-start: 2;
+  grid-row-start: 2;
+  grid-row-end: 3;
+}
+
+.section2 {
+  grid-row-start: 1;
+  grid-row-end: 2;
+  grid-column-start: 2;
+}
+
+.section3 {
+  grid-column-start: 1;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+.section4 {
+  grid-column-start: 1;
+  grid-row-start: 2;
+  grid-column-end: 2;
+}
+
+.section5 {
+  grid-column-start: 3;
+  grid-row-start: 1;
+  grid-column-end: 4;
+}
+
+.section6 {
+  grid-column-start: 3;
+  grid-row-start: 2;
+  grid-column-end: 4;
+}
+
+.section h2 {
+  margin-top: 0;
+  color: #800080;
+  font-family: Lato, sans-serif;
+  font-size: 24px;
+}
+
+.hide-column {
+  display: none;
+}
+
+.custom-text {
+  transform: translate(0%, -290%);
+  font-size: 30px;
+}
+
+.breakdown-text {
+  transform: translate(0%, -770%);
+  font-size: 30px;
+}
+
+
+/* bills table css */
+.bills_section {
+  font-family: Lato, sans-serif;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+.bills_section table {
+  border-collapse: collapse;
+  box-shadow: 20px 20px 20px 5px #a7bad3;
+  background-color: white;
+  text-align: left
+}
+
+.bills_section th {
+  background-color: purple;
+  color: white;
+  padding: 0.75rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  width: 250px;
+}
+
+.bills_section td {
+  padding: 1rem 2rem;
+  width: 250px;
+}
+
+.bills_section tr:nth-child(even) {
+  background-color: #fbf3fe;
+}
+
+/* Section 2: Spending Overview css */
+.sec_2 {
+  font-family: Lato, sans-serif;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+.sec_2 table {
+  border-collapse: collapse;
+  box-shadow: 20px 20px 20px 5px #a7bad3;
+  background-color: white;
+  text-align: left
+}
+
+.sec_2 th {
+  background-color: purple;
+  color: white;
+  padding: 0.75rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  width: 250px;
+}
+
+.sec_2 td {
+  padding: 1rem 2rem;
+  width: 250px;
+}
+
+.sec_2 tr:nth-child(even) {
+  background-color: #fbf3fe;
+}
+
+
+/* Section 3: Current Budget css */
+
+.budget-table {
+  font-family: Lato, sans-serif;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+
+.budget-table table {
+  border-collapse: collapse;
+  box-shadow: 20px 20px 20px 5px #a7bad3;
+  background-color: white;
+  text-align: left;
+}
+
+.budget-table th {
+  background-color: purple;
+  color: white;
+  padding: 0.75rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  width: 250px;
+}
+
+.budget-table td {
+  padding: 1rem 2rem;
+  width: 250px;
+}
+
+.budget-table .positive {
+  color: green; /* Added to set the text color to green for positive values */
+}
+
+.budget-table .negative {
+  color: red; /* Added to set the text color to red for negative values */
+  font-weight: bold;
+}
+
+.budget-table tbody tr:nth-child(even) {
+  background-color: #fbf3fe;
+}
+
+  
+
+/* Section 5: Investments css */
+.crypto-table2 {
+  display: none;
+  border-collapse: collapse;
+  box-shadow: 20px 20px 20px 5px #a7bad3;
+  background-color: white;
+  text-align: left;
+  font-family: Lato, sans-serif;
+  justify-content: center;
+  align-items: center;
+}
+
+.crypto-table2 th {
+  background-color: purple;
+  color: white;
+  padding: 0.75rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  width: 250px;
+}
+
+.crypto-table2 td {
+  padding: 1rem 2rem;
+  width: 250px;
+}
+
+.crypto-table2 .positive {
+  color: green; /* Added to set the text color to green for positive values */
+}
+
+.crypto-table2 .negative {
+  color: red; /* Added to set the text color to red for negative values */
+  font-weight: bold;
+}
+
+.crypto-table2 tbody tr:nth-child(even) {
+  background-color: #fbf3fe;
+}
+
+.show {
+  display: table;
+  opacity: 1;
+}
+.hide {
+  display: none;
+}
+.custom-table2 {
+  display: none;
+  border-collapse: collapse;
+  box-shadow: 20px 20px 20px 5px #a7bad3;
+  background-color: white;
+  text-align: left;
+  font-family: Lato, sans-serif;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-table2 th {
+  background-color: purple;
+  color: white;
+  padding: 0.75rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  font-size: 0.7rem;
+  font-weight: 900;
+  width: 250px;
+}
+
+.custom-table2 td {
+  padding: 1rem 2rem;
+  width: 250px;
+}
+
+.custom-table2 tbody tr:nth-child(even) {
+  background-color: #fbf3fe;
+}
+
+.canvas-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+}
+
+
+
+tr:nth-child(even) {
+  background-color: #fbf3fe;
+}
+
+/* button style for section 5*/
+.buttonin {
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: #535353;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 18px;
+}
+
+.buttonin:hover {
+  background-color: #2c2c2c;
+  color: white;
+}
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#donut_chart {
+  width: 500px;
+  height: 500px;
+  margin-bottom: 20px;
+}
+
+.alert {
+  background-color: #f44336;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+#NothingHere {
+  color: #800080;
+  font-family: Raleway, sans-serif;
+  font-size: 16px;
+}

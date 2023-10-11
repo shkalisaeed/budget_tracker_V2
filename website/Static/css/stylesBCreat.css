@@ -1,0 +1,142 @@
+body {
+	font-family: Lato, sans-serif;
+	margin: 0;
+  padding: 0;
+  overflow-y: scroll;
+}
+.alert {
+  padding: 20px;
+  background-color: #f44336;
+  color: white;
+  text-align: center; /* Center the text */
+  max-width: 600px; /* Set a maximum width for the alert box */
+  margin: 0 auto; /* Center the alert box horizontally */
+}
+
+.alert a {
+  color: white; /* Set the link color to white */
+  text-decoration: none; /* Remove the default underline */
+  font-weight: bold; /* Make the text bold */
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: black;
+}
+table {
+  border-collapse: collapse;
+  width: 80%;
+  margin: 50px auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+th {
+  background-color: purple;
+  font-weight: bold;
+  color: white;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+}
+tr:nth-child(even) {
+  background-color: #fbf3fe;
+}
+
+.dropdown {
+  cursor: pointer;
+}
+
+.dropdown:hover {
+  background-color: #eee;
+}
+
+.subcategory table {
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.subcategory th, .subcategory td {
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.subcategory td:first-child {
+  font-weight: bold;
+}
+
+.subcategory input {
+  width: 100%;
+}
+
+.total {
+  font-weight: bold;
+}
+
+#summary-row {
+  background-color: purple;
+  color: white;
+  font-weight: bold;
+}
+
+.container {
+  display: grid;
+  place-items: center;
+  height: 10vh; /* Adjust the height as needed */
+}
+
+.button {
+  background-color: purple;
+  border: 2px solid purple;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 12px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+  width: 50%;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: white;
+  color: purple;
+}
+.total {
+  position: relative;
+}
+
+.total::before {
+  content: "$";
+  position: absolute;
+  left: 0;
+}
+
+.total::after {
+  content: attr(data-value);
+}
+
+header {
+	background-color: #333;
+	color: #fff;
+	padding: 20px;
+	margin-top: 4rem;
+}
+
+#output{
+  width: 100%;
+}

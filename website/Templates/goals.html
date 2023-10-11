@@ -1,0 +1,260 @@
+{% block body %}
+    <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Goals · Cassowary Budget App</title>
+            <link rel="stylesheet" type="text/css" href="/Static/css/stylesEXP.css">
+            <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+                  rel="stylesheet">
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+                    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                    crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+                    integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+                    crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+                    integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+                    crossorigin="anonymous"></script>
+            <link rel="icon"
+                  href="{{ url_for('static', filename='images/favicon.ico') }}"
+                  type="image/x-icon">
+        </head>
+        <body style="font-family: 'Raleway', sans-serif;">
+            {% set current_page = "goals" %}  <!-- Set the current page variable -->
+            {% include 'navbar.html' %}
+            <!-- Add your content here -->
+            <header>
+                <h1>Goals</h1>
+            </header>
+            <main>
+                {% if goal_count == 0 %}
+                    <strong style="font-size: 90px;
+                                   margin: 12rem auto;
+                                   margin-bottom: 0;
+                                   text-align: center">No goals found. Add some <a href="{{ url_for('uploads.upload_goals') }}">here.</a></strong>
+                    <img class="notfound"
+                         src="{{ url_for('static', filename='images/notfound.png') }}">
+                {% else %}
+                    <table class="transactions_table" border="1" cellspacing="0">
+                        <tr>
+                            <th>Goal</th>
+                            <th>Target Amount</th>
+                            <th>Target Date</th>
+                            <th>Description</th>
+                            <th>Current Contribution</th>
+                            <th>Progress</th>
+                            <th>Payment Frequency</th>
+                            <th>Next Payment Due</th>
+                            <th>Next Payment Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                        {% for goal in goals %}
+                            <tr>
+                                <td>{{ goal.goal_name }}</td>
+                                <td>{{ "${:.2f}".format(goal.goal_amount) }}</td>
+                                <td>{{ goal.goal_date }}</td>
+                                <td>{{ goal.goal_description }}</td>
+                                <td>{{ "${:.2f}".format(goal.total_contribution) }}</td>
+                                <td>
+                                    {% if goal.total_contribution <= goal.goal_amount %}
+                                        {{ "{:.2f}%".format(goal.total_contribution / goal.goal_amount * 100)}}
+                                    {% endif %}
+                                    {% if goal.total_contribution > goal.goal_amount %}
+                                        {{ "{:.2f}%".format(100)}}
+                                    {% endif %}
+                                </td>
+                                <td>{{ goal.contribution_frequency }}</td>
+                                <td>{{ goal.next_contribution_date }}</td>
+                                <td>{{ "${:.2f}".format(goal.next_contribution_amount) }}</td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-success"
+                                            data-toggle="modal"
+                                            data-target="#update_goal_{{ goal['goal_id'] }}">Update</button>
+                                    <div class="modal fade"
+                                         id="update_goal_{{ goal['goal_id'] }}"
+                                         tabindex="-1"
+                                         role="dialog"
+                                         aria-labelledby="basicModal"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                    <h4 class="modal-title" id="myModalLabel">Update a goal</h4>
+                                                </div>
+                                                <form action="{{ url_for('views.update_goal', goal_id=goal['goal_id']) }}"
+                                                      method="post">
+                                                    <div class="modal-body">
+                                                        <div class="form-group row">
+                                                            <br>
+                                                            <label for="Name" class="col-xs-2 control-label">Name</label>
+                                                            <div class="col-xs-10">
+                                                                <input type="text"
+                                                                       class="form-control"
+                                                                       name="Name"
+                                                                       value="{{ goal['goal_name'] }}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <br>
+                                                            <label for="Date" class="col-xs-2 control-label">Date</label>
+                                                            <div class="col-xs-10">
+                                                                <input type="date"
+                                                                       class="form-control"
+                                                                       name="Date"
+                                                                       value="{{ goal['goal_date'] }}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row">
+                                                            <br>
+                                                            <label for="Description" class="col-xs-2 control-label">Description</label>
+                                                            <div class="col-xs-10">
+                                                                <input type="text"
+                                                                       class="form-control"
+                                                                       name="Description"
+                                                                       value="{{ goal['goal_description'] }}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row" id="Amount">
+                                                            <br>
+                                                            <label for="Amount" class="col-xs-2 control-label">Amount</label>
+                                                            <div class="col-xs-10">
+                                                                <input type="text"
+                                                                       class="form-control"
+                                                                       name="Amount"
+                                                                       value="{{ goal['goal_amount'] }}" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row" id="Frequency">
+                                                            <br>
+                                                            <label for="Frequency" class="col-xs-2 control-label">Contribution Frequency</label>
+                                                            <div class="col-xs-10">
+                                                                <select type="text"
+                                                                        class="form-control"
+                                                                        name="Frequency"
+                                                                        value="{{ goal['contribution_frequency'] }}">
+                                                                    <option value="none" selected disabled hidden>{{ goal['contribution_frequency'] }}</option>
+                                                                    <option value="Weekly">Weekly1</option>
+                                                                    <option value="Fortnightly">Fortnightly</option>
+                                                                    <option value="Monthly">Monthly</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <br>
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-success">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button"
+                                            class="btn btn-danger"
+                                            data-toggle="modal"
+                                            data-target="#delete_goal_{{ goal['goal_id'] }}">Delete</button>
+                                    <div class="modal fade"
+                                         id="delete_goal_{{ goal['goal_id'] }}"
+                                         role="dialog"
+                                         aria-labelledby="basicModal"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                    <h4 class="modal-title" id="myModalLabel">Delete a goal</h4>
+                                                </div>
+                                                <form action="{{ url_for('views.delete_goal', goal_id=goal['goal_id']) }}"
+                                                      method="post"
+                                                      style="display: inline">
+                                                    <div class="modal-body">
+                                                        <div class="form-group row">
+                                                            <label class="col-sm-12 col-form-label">
+                                                                Do you want to delete the goal <span style='font-weight:bold;color:red'>{{ goal['goal_name'] }}</span>?
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <br>
+                                                        <br>
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="button"
+                                            class="btn btn-danger"
+                                            data-toggle="modal"
+                                            data-target="#goal_contribution_{{ goal['goal_id'] }}">Contribute</button>
+                                    <div class="modal fade"
+                                         id="goal_contribution_{{ goal['goal_id'] }}"
+                                         role="dialog"
+                                         aria-labelledby="basicModal"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                    <h4 class="modal-title" id="myModalLabel">Delete an expense</h4>
+                                                </div>
+                                                <form action="{{ url_for('views.goal_contribution', goal_id=goal['goal_id']) }}"
+                                                      method="post"
+                                                      style="display: inline">
+                                                    <div class="modal-body">
+                                                        <div class="form-group row">
+                                                            <label class="col-sm-12 col-form-label">
+                                                                Would you like to make a contribution for <span style='font-weight:bold;'>{{ goal['goal_name'] }}</span>?
+                                                            </label>
+                                                            <br>
+                                                            <label class="col-sm-12 col-form-label">
+                                                                Current contribution: <span style='font-weight:bold;'>{{ goal['total_contribution'] }}</span>
+                                                            </label>
+                                                            <br>
+                                                            <div class="col-xs-10">
+                                                                <label for="Date" class="col-xs-2 control-label">Contribution Amount</label>
+                                                                <input type="text" class="form-control" name="Contribution" />
+                                                            </div>
+                                                            <br>
+                                                            <div>
+                                                                {% if contribution_history(goal.goal_id) %}
+                                                                    <b>Contribution History</b>
+                                                                    <br>
+                                                                    {% for contribution in contribution_history(goal.goal_id) %}
+                                                                        <br>
+                                                                        {{ contribution.timestamp.split()[0] }}
+                                                                        <br>
+                                                                        {{ "${:.2f}".format(contribution.amount) }}
+                                                                        <br>
+                                                                    {% endfor %}
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <br>
+                                                        <br>
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-danger">Make Contribution</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <form action="{{ url_for('views.goal_ics', goal_id=goal['goal_id']) }}"
+                                          method="POST">
+                                        <button class="submit">Remind Me</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </main>
+            {% include 'footer.html' %}
+        </body>
+    </html>
+{% endblock %}

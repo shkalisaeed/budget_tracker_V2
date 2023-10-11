@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+{% block body %}
+  <html>
+    <head>
+      <meta charset="UTF-8"
+            name="viewport"
+            content="width=device-width, initial-scale=1.0">
+      <title>Home · Cassowary Budget App</title>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <link rel="stylesheet" type="text/css" href="/Static/css/stylesHome.css">
+      <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap"
+            rel="stylesheet">
+      <link rel="stylesheet"
+            href="{{ url_for('static', filename='css/navbar.css') }}">
+      <link rel="icon"
+            href="{{ url_for('static', filename='images/favicon.ico') }}"
+            type="image/x-icon">
+      <link rel="stylesheet" type="text/css" href="/Static/css/stylesEXP.css">
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+              integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+              crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js"
+              integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+              crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js"
+              integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+              crossorigin="anonymous"></script>
+      <link rel="icon"
+            href="{{ url_for('static', filename='images/favicon.ico') }}"
+            type="image/x-icon">
+      <!-- any google charts here please-->
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+      <script type="text/javascript">
+          google.charts.load("current", {packages:["corechart"]});
+          google.charts.setOnLoadCallback(drawChart);
+          google.charts.setOnLoadCallback(drawChartBreakdown);
+          
+          function drawChart() {
+            var total_remaining = {{ total_remaining | safe }};
+            var total_budget_unformat = {{ total_budget | safe }};
+            var total_budget_set = {{ total_budget_set | safe}}
+            console.log(total_remaining)
+            var total_budget = total_budget_unformat.toFixed(2);
+
+            var data = google.visualization.arrayToDataTable([
+              ['Spending/Budget', '$'],
+              ['Total Spent ($)', total_budget_unformat],
+              ['Total Budget Remaining ($)', total_remaining],
+            ]);
+
+            var options = {
+              pieHole: 0.8,
+              backgroundColor: 'transparent',
+              colors: ['#D9534F', '#5CB85C'],
+              legend: 'bottom',
+              pieSliceText: 'none'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+            chart.draw(data, options);
+
+            // Add custom text to the middle of the chart
+            var chartContainer = document.getElementById('donutchart');
+            var customText = document.createElement('div');
+            customText.className = 'custom-text';
+            if (total_budget_set === 0.00) {
+              customText.innerHTML = '$' + total_budget;
+              customText.style.position = "relative";
+              customText.style.top = "-165px";
+            } else {
+              customText.innerHTML = '$' + total_budget + '<br> ---- of ---- <br>' + '$' + total_budget_set.toFixed(2);
+            }
+            chartContainer.appendChild(customText);
+          }
+
+          
+
+          function drawChartBreakdown() {
+            var breakdown_rows = {{ breakdown_rows | safe }}
+            var data = google.visualization.arrayToDataTable(breakdown_rows);
+    
+            var options = {
+              pieHole: 0.6,
+              backgroundColor: 'transparent',
+              colors: ['#e7e1ef', '#d4b9da', '#c994c7', '#df65b0', '#e7298a', '#ce1256', '#980043', '#67001f', '#49000a', '#320003'],
+              legend: 'none'
+            };
+    
+            var chart = new google.visualization.PieChart(document.getElementById('breakdown'));
+            chart.draw(data, options);
+
+            // Add custom text to the middle of the chart
+            var chartContainer = document.getElementById('breakdown');
+            var breakdownText = document.createElement('div');
+            breakdownText.className = 'breakdown-text';
+            breakdownText.innerHTML = 'Breakdown';
+            chartContainer.appendChild(breakdownText);
+            
+          }
+
+          google.charts.setOnLoadCallback(drawChartBar);
+          function drawChartBar() {
+            var bar_array = {{ bar_array | safe }}
+            var header = ["Type", "Amount", { role: "style" }];
+            bar_array.unshift(header);
+            var data = google.visualization.arrayToDataTable(bar_array);
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                            { calc: "stringify",
+                              sourceColumn: 1,
+                              type: "string",
+                              role: "annotation" },
+                            2]);
+
+            var options = {
+              title: "Total Spendings for each account",
+              bar: {groupWidth: "95%"},
+              backgroundColor: 'transparent',
+              legend: { position: "none" },
+            };
+            var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
+            chart.draw(view, options);
+        }
+
+        function sortTable(n) {
+          var tables = document.getElementsByTagName("table");
+          var switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+          dir = "asc";
+        
+          for (var t = 0; t < tables.length; t++) {
+            var table = tables[t];
+            switching = true;
+        
+            while (switching) {
+              switching = false;
+              var rows = table.rows;
+        
+              for (i = 1; i < (rows.length - 2); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("td")[n];
+                y = rows[i + 1].getElementsByTagName("td")[n];
+                var xValue = getCellValue(x);
+                var yValue = getCellValue(y);
+        
+                if (dir === "asc") {
+                  if (xValue > yValue) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                } else if (dir === "desc") {
+                  if (xValue < yValue) {
+                    shouldSwitch = true;
+                    break;
+                  }
+                }
+              }
+        
+              if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+              } else {
+                if (switchcount === 0 && dir === "asc") {
+                  dir = "desc";
+                  switching = true;
+                }
+              }
+            }
+          }
+          updateSortIndicator(n, dir); // Update sort indicator after sorting
+        }
+        function updateSortIndicator(columnIndex, sortOrder) {
+          var arrowElements = document.getElementsByClassName("sort-arrow");
+        
+          // Remove active class and reset arrow direction for all arrows
+          for (var i = 0; i < arrowElements.length; i++) {
+            arrowElements[i].classList.remove("active");
+            arrowElements[i].innerHTML = "";
+          }
+        
+          var arrowElement = document.getElementById("arrow" + columnIndex);
+        
+          // Add active class to the arrow of the sorted column
+          arrowElement.classList.add("active");
+        
+          // Update arrow direction based on the sort order
+          arrowElement.innerHTML = sortOrder === "asc" ? "&#8593;" : "&#8595;";
+        }
+        
+        
+        
+        function getCellValue(cell) {
+          var cellValue = cell.textContent || cell.innerText;
+          return parseNumericValue(cellValue);
+        }
+        
+        function parseNumericValue(value) {
+          return parseFloat(value.replace(/[^0-9.-]+/g, ""));
+        }
+      </script>
+    </head>
+    <body style="font-family: 'Raleway', sans-serif;">
+      <div class="login">
+        {% if not logged_in %}
+          <script>window.location.href = "{{ url_for('views.landing') }}";  // Redirect to login page</script>
+        {% endif %}
+        {% if logged_in %}
+          <!-- Stuff that the user can see after logging in goes here -->
+          {% set current_page = "home" %}  <!-- Set the current page variable -->
+          {% include "navbar.html" %}
+          <div class="container">
+            <!-- Section 1: Upcoming Bills -->
+            <div class="section section1">
+              <div class="bills_section">
+                <h2>
+                  <a href="{{ url_for('uploads.upload_bills') }}">Upcoming Bills ({{ UPCOMING_BILL_DAYS }} days)</a>
+                  <br>
+                </h2>
+                <!-- Add your content for this section -->
+                {% if not upcoming_bills %}
+                  <br>
+                  <a href="{{ url_for('views.bills') }}" id="NothingHere">You don't have any upcoming bills in the next {{ UPCOMING_BILLS }} days. Click here to view your bills.</a>
+                {% endif %}
+                {% if upcoming_bills %}
+                  <br>
+                  <table>
+                    <tr>
+                      <th>Bill</th>
+                      <th>Due</th>
+                      <th>Actions</th>
+                    </tr>
+                    {% for bill in upcoming_bills %}
+                      <tr>
+                        <td>{{ bill.bill_name }}</td>
+                        <td>{{ bill.bill_due_date }}</td>
+                        <td>
+                          <button type="button"
+                                  class="btn btn-success"
+                                  data-toggle="modal"
+                                  data-target="#update_bill_{{ bill['bill_id'] }}">Update</button>
+                          <div class="modal fade"
+                               id="update_bill_{{ bill['bill_id'] }}"
+                               tabindex="-1"
+                               role="dialog"
+                               aria-labelledby="basicModal"
+                               aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                  <h4 class="modal-title" id="myModalLabel">Update a bill</h4>
+                                </div>
+                                <form action="{{ url_for('views.update_bill', bill_id=bill['bill_id']) }}"
+                                      method="post">
+                                  <div class="modal-body">
+                                    <div class="form-group row">
+                                      <br>
+                                      <label for="Name" class="col-xs-2 control-label">Name</label>
+                                      <div class="col-xs-10">
+                                        <input type="text"
+                                               class="form-control"
+                                               name="Name"
+                                               value="{{ bill['bill_name'] }}" />
+                                      </div>
+                                    </div>
+                                    <div class="form-group row">
+                                      <br>
+                                      <label for="Date" class="col-xs-2 control-label">Date</label>
+                                      <div class="col-xs-10">
+                                        <input type="date"
+                                               class="form-control"
+                                               name="Date"
+                                               value="{{ bill['bill_due_date'] }}" />
+                                      </div>
+                                    </div>
+                                    <div class="form-group row">
+                                      <br>
+                                      <label for="Description" class="col-xs-2 control-label">Description</label>
+                                      <div class="col-xs-10">
+                                        <input type="text"
+                                               class="form-control"
+                                               name="Description"
+                                               value="{{ bill['bill_description'] }}" />
+                                      </div>
+                                    </div>
+                                    <div class="form-group row" id="Frequency">
+                                      <br>
+                                      <label for="Frequency" class="col-xs-2 control-label">Frequency</label>
+                                      <div class="col-xs-10">
+                                        <select type="text"
+                                                class="form-control"
+                                                name="Frequency"
+                                                value="{{ bill['bill_options'] }}">
+                                          <option value="none" selected disabled hidden>{{ bill['bill_options'] }}</option>
+                                          <option value="Monthly">Monthly</option>
+                                          <option value="Quarterly">Quarterly</option>
+                                          <option value="Biannual">Biannual</option>
+                                          <option value="Annual">Annual</option>
+                                          <option value="Custom Days">Custom Days</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="form-group row" id="Custom_Freq">
+                                      <br>
+                                      <label for="Custom_Freq" class="col-xs-2 control-label">Custom Frequency</label>
+                                      <div class="col-xs-10">
+                                        <input type="text"
+                                               class="form-control"
+                                               name="Custom_Freq"
+                                               value="{{ bill['bill_custom_freq'] }}" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <br>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                          <button type="button"
+                                  class="btn btn-danger"
+                                  data-toggle="modal"
+                                  data-target="#delete_bill_{{ bill['bill_id'] }}">Delete</button>
+                          <div class="modal fade"
+                               id="delete_bill_{{ bill['bill_id'] }}"
+                               role="dialog"
+                               aria-labelledby="basicModal"
+                               aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                  <h4 class="modal-title" id="myModalLabel">Delete an expense</h4>
+                                </div>
+                                <form action="{{ url_for('views.delete_bill', bill_id=bill['bill_id']) }}"
+                                      method="post"
+                                      style="display: inline">
+                                  <div class="modal-body">
+                                    <div class="form-group row">
+                                      <label class="col-sm-12 col-form-label">
+                                        Do you want to delete the bill <span style='font-weight:bold;color:red'>{{ bill['bill_name'] }}</span>?
+                                      </label>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <br>
+                                    <br>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                          <form action="{{ url_for('views.make_ics', bill_id=bill['bill_id']) }}"
+                                method="POST">
+                            <button class="submit">Remind Me</button>
+                          </form>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </table>
+                {% endif %}
+              </div>
+            </div>
+            <!-- Section 2: Spending Overview -->
+            <div class="section section2">
+              <div class="sec_2">
+                <h2>
+                  <a href="{{ url_for('views.summary') }}">Spending Overview</a>
+                </h2>
+                {% if not user_expenses %}
+                  <br>
+                  <a href="{{ url_for('uploads.upload_expenses') }}" id="NothingHere">You don't have any expenses for this month. Click here to upload them.</a>
+                {% endif %}
+                <div style="display: flex;
+                            justify-content: center;
+                            align-items: flex-start">
+                  <body>
+                    <div id="donutchart" style="width: 500px; height: 500px;"></div>
+                  </body>
+                </div>
+                <h2>Top Expenses this month</h2>
+                {% if top_five %}
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Place</th>
+                        <th>Category</th>
+                        <th>Amount of Transactions</th>
+                        <th>Amount Spent</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for key, value in top_five.items() %}
+                        <tr>
+                          <td>{{ key }}</td>
+                          <td>{{ value[2] }}</td>
+                          <td>{{ value[0] }}</td>
+                          <td>{{ "${:.2f}".format(value[1]) }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% endif %}
+                <!-- Add your content for this section -->
+              </div>
+            </div>
+            <!-- Section 3: Budget -->
+            <div class="section section3">
+              <h2>
+                <a href="{{ url_for('views.budget_creator') }}">Current Budget</a>
+              </h2>
+              {% if not user_budget %}
+                <br>
+                <a href="{{ url_for('views.budget_creator') }}" id="NothingHere">You don't have a budget set. Click here to create one.</a>
+                <br>
+              {% endif %}
+              {% if user_budget %}
+                <div style="display: flex;
+                            justify-content: center;
+                            align-items: flex-start">
+                  <body>
+                    <div id="breakdown" style="width: 500px; height: 500px;"></div>
+                  </body>
+                </div>
+                <div class="budget-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th onclick="sortTable(0)">
+                          Category <span id="arrow0" class="sort-arrow"></span>
+                        </th>
+                        <th onclick="sortTable(1)">
+                          Spent <span id="arrow1" class="sort-arrow"></span>
+                        </th>
+                        <th class="hide-column" onclick="sortTable(2)">Budget</th>
+                        <th onclick="sortTable(3)">
+                          Remaining <span id="arrow2" class="sort-arrow"></span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in spendings %}
+                        <tr>
+                          <td>{{ row.category }}</td>
+                          <td>{{ row.spent|format_currency }}</td>
+                          <td class="hide-column">{{ row.budget }}</td>
+                          <td class="{% if row.budget - row.spent > 0 %}positive{% else %}negative{% endif %}">
+                            {{ (row.budget - row.spent)|format_currency }}
+                          </td>
+                        </tr>
+                      {% endfor %}
+                      <tr style="font-weight: bold;">
+                        <td>Total</td>
+                        <td>{{ spendings|sum(attribute='spent')|format_currency }}</td>
+                        <td class="hide-column">{{ spendings|sum(attribute='budget') }}</td>
+                        <td class="{% if spendings|sum(attribute='budget') - spendings|sum(attribute='spent') > 0 %}positive{% else %}negative{% endif %}">
+                          {{ (spendings|sum(attribute='budget') - spendings|sum(attribute='spent'))|format_currency }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              {% endif %}
+              <!-- Add your content for this section -->
+            </div>
+            <!-- Section 4: Expenditure -->
+            <div class="section section4">
+              <h2>
+                <a href="{{ url_for('views.expenses') }}">Expenditure per Account</a>
+              </h2>
+              {% if not user_expenses %}
+                <br>
+                <a href="{{ url_for('uploads.upload_csv') }}" id="NothingHere">You don't have any expenses for this month. Click here to upload a CSV.</a>
+              {% endif %}
+              <body>
+                <div id="barchart_values" style="width: 500px; height: 500px;"></div>
+              </body>
+              <!-- Add your content for this section -->
+              <!-- Add your content for this section -->
+            </div>
+           <!-- Section 5: Investment -->
+           <div class="section section5">
+            <h2>
+              <a href="{{ url_for('views.investment_tracking') }}">Investment Information</a>
+            </h2>
+            <br>
+            {% if not cryptocurrency %}
+              <a href="{{ url_for('uploads.upload_investment') }}" id="NothingHere">You don't have any invesments right now.</a>
+            {% else %}
+          <p>All Investment Info for {{ current_user.first_name + " " + current_user.last_name }}</p>
+          <div style="display: flex; justify-content: center;">
+            <select onchange="toggleTable()" class="buttonin" style="width: 200px;">
+              <option value="stock_crypto">Stock & Crypto</option>
+              <option value="custom_investment">Custom Investments</option>
+            </select>
+          </div>
+          <br>
+            <table class="crypto-table2">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Date Purchased</th>
+                  <th>Current Price</th>
+                  <th>Profit/Loss</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entry in cryptocurrency[:] %}
+                  {% set x = rand_profit_loss(entry.stock_and_crypto_id) %}
+                  <tr>
+                    <td>{{ entry.ticker_name }}</td>
+                    <td>{{ entry.investment_type }}</td>
+                    <td>${{ entry.total_price }}</td>
+                    <td>{{ entry.order_date }}</td>
+                    <td>${{ x }}</td>
+                    <td class="{% if x > entry.total_price %}positive{% else %}negative{% endif %}">
+                      {{ "%.2f"|format(x / entry.total_price * 100 - 100) }}%
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <table class="custom-table2">
+                <thead>
+                  <tr>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Date Purchased</th>
+        
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for entry in cryptocurrency2[:] %}
+                    <tr>
+                      <td>{{ entry.description}}</td>
+                      <td>${{ entry.purchased_amount}}</td>
+                      <td>{{ entry.purchased_date}}</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+              <br>
+            
+            <div class="canvas-container">     
+              <canvas id="pieChart2" width="220" height="220"></canvas>              
+            </div>
+            <div class="canvas-container">     
+              <canvas id="pieChart3" width="280" height="280"></canvas>              
+            </div>
+            <br>        
+            {% endif %}
+
+            <script>
+              function toggleTable() {
+                var select = document.querySelector('.buttonin');
+                var cryptoTable = document.querySelector('.crypto-table2');
+                var customTable = document.querySelector('.custom-table2');
+                
+                if (select.value === 'stock_crypto') {
+                  cryptoTable.style.display = 'table';
+                  customTable.style.display = 'none';
+                } else if (select.value === 'custom_investment') {
+                  cryptoTable.style.display = 'none';
+                  customTable.style.display = 'table';
+                }
+              }
+            </script>
+            
+            
+  
+
+             <!--PIE CHART NO-2 CODE FOR SECTION 5-->
+             <script>
+              // Retrieve investment types and total prices from the HTML table
+              const investmentTypes = Array.from(document.querySelectorAll('.crypto-table2 tbody tr td:nth-child(2)')).map(td => td.textContent);
+              const totalPrices = Array.from(document.querySelectorAll('.crypto-table2 tbody tr td:nth-child(3)')).map(td => parseFloat(td.textContent.slice(1)));
+            
+              // Calculate the total investment amount for each type
+              const investmentTypeTotal = {};
+              investmentTypes.forEach((type, index) => {
+                if (!investmentTypeTotal[type]) {
+                  investmentTypeTotal[type] = 0;
+                }
+                investmentTypeTotal[type] += totalPrices[index];
+              });
+            
+              // Calculate the total investment amount
+              const totalInvestment = Object.values(investmentTypeTotal).reduce((sum, amount) => sum + amount, 0);
+            
+              // Calculate the percentages
+              const percentages = Object.values(investmentTypeTotal).map(amount => ((amount / totalInvestment) * 100).toFixed(2));
+            
+              // Extract the investment types and their labels
+              const labels = Object.keys(investmentTypeTotal);
+            
+              // Create the pie chart
+              const ctx = document.getElementById('pieChart2').getContext('2d');
+              new Chart(ctx, {
+                type: 'pie',
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    data: percentages,
+                    backgroundColor: ['#7b4173', '#ffc000', '#FFCE56', '#8c564b', '#bcbd22', '#7b4173']
+                  }]
+                },
+                options: {
+                  responsive: false,
+                  plugins: {
+                    title: {
+                      display: true,
+                      text: 'Investment Overview',
+                      position: 'bottom',
+                      fontSize: 18,
+                      fontColor: '#333'
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: (context) => {
+                          const label = context.label || '';
+            
+                          if (label) {
+                            const percentage = parseFloat(context.parsed).toFixed(2);
+                            return `${label}: ${percentage}%`;
+                          }
+            
+                          return null;
+                        }
+                      }
+                    }
+                  },
+                  legend: {
+                  position: 'bottom' // Display labels below the chart
+                  }
+                }
+              });
+            </script>
+
+                         <!--PIE CHART NO-3 CODE FOR SECTION 5-->
+                         <script>
+                          // Retrieve investment types and total prices from the HTML table
+                          const investmentTypes2 = Array.from(document.querySelectorAll('.crypto-table2 tbody tr td:nth-child(1)')).map(td => td.textContent);
+                          const totalPrices2 = Array.from(document.querySelectorAll('.crypto-table2 tbody tr td:nth-child(3)')).map(td => parseFloat(td.textContent.slice(1)));
+                        
+                          // Calculate the total investment amount for each type
+                          const investmentTypeTotal2 = {};
+                          investmentTypes2.forEach((type, index) => {
+                            if (!investmentTypeTotal2[type]) {
+                              investmentTypeTotal2[type] = 0;
+                            }
+                            investmentTypeTotal2[type] += totalPrices2[index];
+                          });
+                        
+                          // Calculate the total investment amount
+                          const totalInvestment2 = Object.values(investmentTypeTotal2).reduce((sum, amount) => sum + amount, 0);
+                        
+                          // Calculate the percentages
+                          const percentages2 = Object.values(investmentTypeTotal2).map(amount => ((amount / totalInvestment2) * 100).toFixed(2));
+                        
+                          // Extract the investment types and their labels
+                          const labels2 = Object.keys(investmentTypeTotal2);
+                        
+                          // Create the pie chart
+                          const ctx2 = document.getElementById('pieChart3').getContext('2d');
+                          new Chart(ctx2, {
+                            type: 'pie',
+                            data: {
+                              labels: labels2,
+                              datasets: [{
+                                data: percentages2,
+                                backgroundColor: ['#BF8CB4', '#FFC266', '#FFC699', '#8FBED6', '#9AC7D0', '#FFA6B3', '#FFCFA6', '#C4A7C4', '#77CC77', '#FF947D']
+
+
+                              }]
+                            },
+                            options: {
+                              responsive: false,
+                              plugins: {
+                                title: {
+                                  display: true,
+                                  text: 'Asset Allocation',
+                                  position: 'bottom',
+                                  fontSize: 18,
+                                  fontColor: '#333'
+                                },
+                                tooltip: {
+                                  callbacks: {
+                                    label: (context) => {
+                                      const label = context.label || '';
+                        
+                                      if (label) {
+                                        const percentage = parseFloat(context.parsed).toFixed(2);
+                                        return `${label}: ${percentage}%`;
+                                      }
+                        
+                                      return null;
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          });
+                        </script>
+            </div>
+            <!-- Section 6: Goals -->
+            <div class="section section6">
+              <h2>
+                <a href="{{ url_for('views.goals') }}">Your Goals</a>
+              </h2>
+              <!-- Add your content for this section -->
+              {% if not goal_ids %}
+                <br>
+                <a href="{{ url_for('uploads.upload_goals') }}" id="NothingHere">You don't have any goals set. Click here to upload one.</a>
+              {% endif %}
+              {% if goal_ids %}
+                <div>
+                  <label for="budgets">Choose:</label>
+                  <select id="budgets" style="font-size: 1.2rem; padding: 8px;">
+                    {% for index in range(goal_names|length) %}
+                      <option value="{{ goal_ids[index] }}">{{ goal_names[index] }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <h3 id="title">{{ goal_names[0] }}</h3>
+                <div id="test-div" class="alert" style="background-color: red; border: 1px solid black;">
+                  In order to stay on track, deposit ${{ next_contribution_amounts[0] }} before 
+                  {{ next_contribution_dates[0] }}
+                </div>
+                <div class="chart-container">
+                  <div id="donut_chart"></div>
+                  <br>
+                  <!-- default value upon loading page is the first goal -->
+                </div>
+                <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+                <script type="text/javascript">
+                google.charts.load('current', {'packages':['corechart']});
+                google.charts.setOnLoadCallback(function() {
+                  var firstOptionSelected = false; // Flag to track if first option has been selected
+                  
+                  function updateTitle() {
+                    var select = document.getElementById("budgets");
+                    var selectedGoal = select.options[select.selectedIndex].text;
+                    document.getElementById("title").textContent = selectedGoal;
+                  }
+            
+                  document.getElementById("budgets").addEventListener("change", function() {
+                    updateTitle();
+                    var selectedGoal = this.value;
+                    {% for index in range(goal_names|length) %}
+                      if (selectedGoal === "{{ goal_ids[index] }}") {
+                        var goalAmount = {{ goal_amounts[index] }};
+                        var totalContribution = {{ total_contributions[index] }};
+                        var nextPayAmount = {{next_contribution_amounts[index]}};
+                        var nextPayDate = {{next_contribution_dates[index]|tojson}};
+                        var data = google.visualization.arrayToDataTable([
+                          ['Category', 'Amount'],
+                          ['Contribution', parseFloat(totalContribution)],
+                          ['Remaining', parseFloat(goalAmount) - parseFloat(totalContribution)]
+                        ]);
+                        var options = {
+                          pieHole: 0.8,
+                          backgroundColor: 'transparent',
+                          colors: ['#5CB85C', '#D9534F'],
+                          legend: 'bottom',
+                          pieSliceText: 'none'
+                        };
+                        var chart = new google.visualization.PieChart(document.getElementById('donut_chart'));
+                        chart.draw(data, options);
+
+                        var divElement = document.getElementById("test-div");
+                        divElement.innerHTML = "In order to stay on track, deposit $" + nextPayAmount.toString() + " before " + nextPayDate;
+                        
+
+
+                      // Add the percentage label for Category 1 in the pie hole
+                      
+                      var category1Percentage = '$' + totalContribution + '\n---- of ----\n$' + goalAmount; // Format the percentage value as a string
+
+                      var svgContainer = document.getElementById('donut_chart'); // Get the container div for the chart
+                      var svgElement = svgContainer.getElementsByTagName('svg')[0]; // Get the SVG element of the chart
+                      var pieHoleRadius = options.pieHole * Math.min(svgElement.clientWidth, svgElement.clientHeight) / 2; // Calculate the radius of the pie hole
+
+                      var textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Create a new SVG text element
+                      textElement.setAttribute('x', svgElement.clientWidth / 2); // Set the x-coordinate for the text element
+                      textElement.setAttribute('y', svgElement.clientHeight / 2.8 + 5); // Set the y-coordinate for the text element
+                      textElement.setAttribute('text-anchor', 'middle'); // Set the text-anchor attribute to middle
+                      textElement.setAttribute('font-size', '30px'); // Set the font size for the text element
+                      textElement.setAttribute('font-family', 'Lato, sans-serif');
+
+                      var tspans = category1Percentage.split('\n').map(function(line, index) {
+                        var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                        tspan.setAttribute('x', svgElement.clientWidth / 2);
+                        tspan.setAttribute('dy', '1.2em');
+                        tspan.textContent = line;
+                        return tspan;
+                      });
+
+                      tspans.forEach(function(tspan) {
+                        textElement.appendChild(tspan);
+                      });
+
+                      svgElement.appendChild(textElement); // Append the text element to the SVG container
+            
+                        firstOptionSelected = true; // Update the flag
+                      }
+                    {% endfor %}
+                  });
+            
+                  // Show chart for the first option by default
+                  if (!firstOptionSelected) {
+                    var goalAmount = {{ goal_amounts[0] }};
+                    var totalContribution = {{ total_contributions[0] }};
+                    var data = google.visualization.arrayToDataTable([
+                      ['Category', 'Amount'],
+                      ['Contribution', parseFloat(totalContribution)],
+                      ['Remaining', parseFloat(goalAmount) - parseFloat(totalContribution)]
+                    ]);
+                    var options = {
+                      pieHole: 0.8,
+                      backgroundColor: 'transparent',
+                      colors: ['#5CB85C', '#D9534F'],
+                      legend: 'bottom',
+                      pieSliceText: 'none'
+                    };
+                    var chart = new google.visualization.PieChart(document.getElementById('donut_chart'));
+                    chart.draw(data, options);
+                    // Add the percentage label for Category 1 in the pie hole
+      
+                    var category1Percentage = '$' + totalContribution + '\n---- of ----\n$' + goalAmount; // Format the percentage value as a string
+
+                    var svgContainer = document.getElementById('donut_chart'); // Get the container div for the chart
+                    var svgElement = svgContainer.getElementsByTagName('svg')[0]; // Get the SVG element of the chart
+                    var pieHoleRadius = options.pieHole * Math.min(svgElement.clientWidth, svgElement.clientHeight) / 2; // Calculate the radius of the pie hole
+
+                    var textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text'); // Create a new SVG text element
+                    textElement.setAttribute('x', svgElement.clientWidth / 2); // Set the x-coordinate for the text element
+                    textElement.setAttribute('y', svgElement.clientHeight / 2.8 + 5); // Set the y-coordinate for the text element
+                    textElement.setAttribute('text-anchor', 'middle'); // Set the text-anchor attribute to middle
+                    textElement.setAttribute('font-size', '30px'); // Set the font size for the text element
+                    textElement.setAttribute('font-family', 'Lato, sans-serif');
+
+                    var tspans = category1Percentage.split('\n').map(function(line, index) {
+                      var tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+                      tspan.setAttribute('x', svgElement.clientWidth / 2);
+                      tspan.setAttribute('dy', '1.2em');
+                      tspan.textContent = line;
+                      return tspan;
+                    });
+
+                  tspans.forEach(function(tspan) {
+                    textElement.appendChild(tspan);
+                  });
+
+                  svgElement.appendChild(textElement); // Append the text element to the SVG container
+                  }
+                });
+                </script>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </body>
+  </html>
+{% endblock %}
